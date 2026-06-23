@@ -1,0 +1,13 @@
+plugins {
+    // this is necessary to avoid the plugins to be loaded multiple times
+    // in each subproject's classloader
+    alias(libs.plugins.androidMultiplatformLibrary) apply false
+    alias(libs.plugins.kotlinMultiplatform) apply false
+}
+
+val projectVersion = providers.gradleProperty("releaseVersion").orElse("1.0.0").get()
+
+allprojects {
+    group = "dev.voir"
+    version = projectVersion
+}
