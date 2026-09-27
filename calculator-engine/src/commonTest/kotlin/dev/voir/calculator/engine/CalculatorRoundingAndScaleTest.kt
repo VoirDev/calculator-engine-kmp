@@ -22,7 +22,7 @@ class CalculatorRoundingAndScaleTest {
     }
 
     @Test
-    fun `evaluate rounds stored formula to input max decimals`() {
+    fun `evaluate shows formula at input max decimals and keeps exact result`() {
         val calculator = Calculator(CalculatorConfig(inputMaxDecimals = 3, divisionScale = 8))
 
         calculator.setFormula("2/3")
@@ -30,7 +30,7 @@ class CalculatorRoundingAndScaleTest {
         calculator.evaluate()
 
         calculator.assertFormula("0.667")
-        calculator.assertSuccess("0.667")
+        calculator.assertRawSuccess("0.66666667")
     }
 
     @Test
@@ -56,7 +56,7 @@ class CalculatorRoundingAndScaleTest {
     }
 
     @Test
-    fun `multiplication can produce more decimals before evaluate normalizes formula`() {
+    fun `multiplication can produce more decimals than the formula shows after evaluate`() {
         val calculator = Calculator(CalculatorConfig(inputMaxDecimals = 2))
 
         calculator.setFormula("1.23*4.56")
@@ -65,11 +65,11 @@ class CalculatorRoundingAndScaleTest {
         calculator.evaluate()
 
         calculator.assertFormula("5.61")
-        calculator.assertSuccess("5.61")
+        calculator.assertSuccess("5.6088")
     }
 
     @Test
-    fun `half up rounding applies to negative stored evaluation result`() {
+    fun `half up rounding applies to negative evaluated formula`() {
         val calculator = Calculator(CalculatorConfig(inputMaxDecimals = 0, divisionScale = 1))
 
         calculator.setFormula("-5/2")
@@ -77,6 +77,6 @@ class CalculatorRoundingAndScaleTest {
         calculator.evaluate()
 
         calculator.assertFormula("-3")
-        calculator.assertSuccess("-3")
+        calculator.assertRawSuccess("-2.5")
     }
 }

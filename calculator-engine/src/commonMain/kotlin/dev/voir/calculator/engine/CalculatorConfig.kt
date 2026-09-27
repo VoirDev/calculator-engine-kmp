@@ -3,32 +3,37 @@ package dev.voir.calculator.engine
 import dev.voir.decimal.Rounding
 
 /**
- * Runtime settings that control calculator parsing and evaluation.
+ * Runtime settings that control calculator input, parsing, and evaluation.
  *
- * @property maxDecimals Compatibility default used by [inputMaxDecimals].
- * @property inputMaxDecimals Maximum number of fractional digits accepted from input.
- * @property divisionScale Internal Decimal scale used for division.
- * @property precedence Evaluation mode for chained operations.
- * @property rounding Rounding mode used for division and evaluated formula precision.
+ * Every default is a constant, so `copy()` changes only the properties you pass.
+ *
+ * @property inputMaxDecimals Maximum fractional digits in a number, from `0` through `9`. Applies to
+ * key input and [CalculatorApi.setFormula], and sets the precision an evaluated result is shown
+ * with in the formula. Lowering it rounds numbers already in the formula.
+ * @property inputMaxDigits Maximum digits in a number typed with [CalculatorApi.inputDigit],
+ * counting a leading zero, from `1` through `38`. It must be greater than [inputMaxDecimals].
+ * Formulas set as text and evaluated results are limited only by what `Decimal` can represent.
+ * @property divisionScale Maximum fractional digits kept by each division, from `0` through
+ * `32767`. It may be lower than [inputMaxDecimals].
+ * @property precedence Whether operations run left to right or with standard precedence.
+ * @property rounding Rounding for division and for results shown at [inputMaxDecimals].
  */
-data class CalculatorConfig(
-    /** Compatibility default for [inputMaxDecimals]. */
-    val maxDecimals: Int = 2,
-    /** Maximum fractional precision accepted by input helpers and parsed formulas. */
-    val inputMaxDecimals: Int = maxDecimals,
-    /** Internal scale used for division. */
-    val divisionScale: Int = inputMaxDecimals + 10,
-    /** Chooses simple left-to-right evaluation or standard arithmetic precedence. */
-    val precedence: CalculatorPrecedence = CalculatorPrecedence.Chain,
-    /** Rounding behavior used for division and evaluated formula precision. */
-    val rounding: Rounding = Rounding.HALF_UP,
+public data class CalculatorConfig(
+    public val inputMaxDecimals: Int = 2,
+    public val inputMaxDigits: Int = 15,
+    public val divisionScale: Int = 12,
+    public val precedence: CalculatorPrecedence = CalculatorPrecedence.Chain,
+    public val rounding: Rounding = Rounding.HALF_UP,
 ) {
     init {
         // Keep input precision intentionally small for a basic calculator engine.
-        require(maxDecimals in 0..9) { "maxDecimals must be between 0 and 9." }
-        require(inputMaxDecimals in 0..9) { "inputMaxDecimals must be between 0 and 9." }
-        require(divisionScale >= 0) {
-            "divisionScale must be >= 0."
+        require(inputMaxDecimals in 0..9) { "inputMaxDecimals must be between 0 and 9, was $inputMaxDecimals." }
+        // Decimal holds at most 38 significant digits.
+        require(inputMaxDigits in 1..38) { "inputMaxDigits must be between 1 and 38, was $inputMaxDigits." }
+        require(inputMaxDigits > inputMaxDecimals) {
+            "inputMaxDigits ($inputMaxDigits) must be greater than inputMaxDecimals ($inputMaxDecimals)."
         }
+        // Decimal rejects division scales outside this range.
+        require(divisionScale in 0..32767) { "divisionScale must be between 0 and 32767, was $divisionScale." }
     }
 }

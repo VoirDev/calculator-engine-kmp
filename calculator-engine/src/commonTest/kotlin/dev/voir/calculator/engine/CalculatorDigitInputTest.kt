@@ -11,9 +11,9 @@ class CalculatorDigitInputTest {
     fun `digits append and update formula and result`() {
         val calculator = Calculator()
 
-        assertTrue(calculator.inputDigit('1'))
-        assertTrue(calculator.inputDigit('2'))
-        assertTrue(calculator.inputDigit('3'))
+        assertAccepted(calculator.inputDigit('1'))
+        assertAccepted(calculator.inputDigit('2'))
+        assertAccepted(calculator.inputDigit('3'))
 
         calculator.assertFormula("123")
         calculator.assertSuccess("123")
@@ -34,9 +34,9 @@ class CalculatorDigitInputTest {
     fun `leading zero is replaced before integer digits`() {
         val calculator = Calculator()
 
-        assertTrue(calculator.inputDigit('0'))
-        assertFalse(calculator.inputDigit('0'))
-        assertTrue(calculator.inputDigit('7'))
+        assertAccepted(calculator.inputDigit('0'))
+        assertRejected(calculator.inputDigit('0'))
+        assertAccepted(calculator.inputDigit('7'))
 
         calculator.assertFormula("7")
         calculator.assertSuccess("7")
@@ -82,5 +82,17 @@ class CalculatorDigitInputTest {
         assertEquals(List(11) { true } + false, accepted)
         calculator.assertFormula("1.123456789")
         calculator.assertSuccess("1.123456789")
+    }
+
+    @Test
+    fun `digit after evaluate starts a new number`() {
+        val calculator = Calculator()
+        calculator.input("2+3")
+        calculator.evaluate()
+
+        assertAccepted(calculator.inputDigit('4'))
+
+        calculator.assertFormula("4")
+        calculator.assertSuccess("4")
     }
 }

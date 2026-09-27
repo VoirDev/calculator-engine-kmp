@@ -25,7 +25,7 @@ class CalculatorFormatterResultTest {
 
     @Test
     fun `format result strips insignificant zeros`() {
-        val config = CalculatorFormatConfig(maxDecimals = 4)
+        val config = CalculatorFormatConfig(maximumFractionDigits = 4)
 
         assertEquals("1", CalculatorFormatter.formatResult(success("1.0000"), config))
         assertEquals("1.23", CalculatorFormatter.formatResult(success("1.2300"), config))
@@ -34,7 +34,7 @@ class CalculatorFormatterResultTest {
 
     @Test
     fun `format result applies max decimals and half up rounding`() {
-        val config = CalculatorFormatConfig(maxDecimals = 2)
+        val config = CalculatorFormatConfig(maximumFractionDigits = 2)
 
         assertEquals("1.24", CalculatorFormatter.formatResult(success("1.235"), config))
         assertEquals("-1.24", CalculatorFormatter.formatResult(success("-1.235"), config))
@@ -43,7 +43,7 @@ class CalculatorFormatterResultTest {
 
     @Test
     fun `format result applies custom decimal separator`() {
-        val config = CalculatorFormatConfig(decimalSeparator = ',', maxDecimals = 3)
+        val config = CalculatorFormatConfig(decimalSeparator = ',', maximumFractionDigits = 3)
 
         assertEquals("12,346", CalculatorFormatter.formatResult(success("12.3456"), config))
         assertEquals("-0,125", CalculatorFormatter.formatResult(success("-0.125"), config))
@@ -54,7 +54,7 @@ class CalculatorFormatterResultTest {
         val config = CalculatorFormatConfig(
             decimalSeparator = ',',
             minimumFractionDigits = 2,
-            maxDecimals = 4,
+            maximumFractionDigits = 4,
         )
 
         assertEquals("1,00", CalculatorFormatter.formatResult(success("1"), config))
@@ -71,7 +71,7 @@ class CalculatorFormatterResultTest {
 
     @Test
     fun `format result applies custom grouping and decimal separators`() {
-        val config = CalculatorFormatConfig(decimalSeparator = ',', groupingSeparator = '.', maxDecimals = 2)
+        val config = CalculatorFormatConfig(decimalSeparator = ',', groupingSeparator = '.', maximumFractionDigits = 2)
 
         assertEquals("1.234.567,89", CalculatorFormatter.formatResult(success("1234567.891"), config))
         assertEquals("-9.876.543,2", CalculatorFormatter.formatResult(success("-9876543.2"), config))
@@ -83,7 +83,7 @@ class CalculatorFormatterResultTest {
             decimalSeparator = ',',
             groupingSeparator = '.',
             minimumFractionDigits = 2,
-            maxDecimals = 4,
+            maximumFractionDigits = 4,
         )
 
         assertEquals("1.234,00", CalculatorFormatter.formatResult(success("1234"), config))
@@ -93,7 +93,7 @@ class CalculatorFormatterResultTest {
 
     @Test
     fun `format result supports zero max decimals`() {
-        val config = CalculatorFormatConfig(maxDecimals = 0)
+        val config = CalculatorFormatConfig(maximumFractionDigits = 0)
 
         assertEquals("2", CalculatorFormatter.formatResult(success("1.5"), config))
         assertEquals("-2", CalculatorFormatter.formatResult(success("-1.5"), config))
@@ -102,7 +102,7 @@ class CalculatorFormatterResultTest {
 
     @Test
     fun `format result supports max precision boundary`() {
-        val config = CalculatorFormatConfig(maxDecimals = 9)
+        val config = CalculatorFormatConfig(maximumFractionDigits = 9)
 
         assertEquals("0.123456789", CalculatorFormatter.formatResult(success("0.1234567894"), config))
         assertEquals("0.12345679", CalculatorFormatter.formatResult(success("0.1234567900"), config))
@@ -110,4 +110,45 @@ class CalculatorFormatterResultTest {
 
     private fun success(text: String): CalculatorResult.Success =
         CalculatorResult.Success(Decimal.of(text))
+
+    @Test
+    fun `format result shows zero for an empty result unless an empty label is set`() {
+        assertEquals("0", CalculatorFormatter.formatResult(CalculatorResult.Empty))
+        assertEquals("0,00", CalculatorFormatter.formatResult(
+            CalculatorResult.Empty,
+            CalculatorFormatConfig(decimalSeparator = ',', minimumFractionDigits = 2),
+        ))
+        assertEquals("", CalculatorFormatter.formatResult(CalculatorResult.Empty, CalculatorFormatConfig(emptyLabel = "")))
+    }
+
+    @Test
+    fun `format result uses per error labels when given`() {
+        val label = { error: CalculatorError ->
+            when (error) {
+                CalculatorError.DivisionByZero -> "Cannot divide by zero"
+                else -> "Error"
+            }
+        }
+
+        assertEquals(
+            "Cannot divide by zero",
+            CalculatorFormatter.formatResult(CalculatorResult.Error(CalculatorError.DivisionByZero), errorLabel = label),
+        )
+        assertEquals(
+            "Error",
+            CalculatorFormatter.formatResult(CalculatorResult.Error(CalculatorError.InvalidNumber("x")), errorLabel = label),
+        )
+    }
+
+    @Test
+    fun `format result renders the configured negative sign`() {
+        val config = CalculatorFormatConfig(negativeSign = '−', operationSymbols = CalculatorOperationSymbols(subtract = '−'))
+
+        assertEquals("−1 234.5", CalculatorFormatter.formatResult(success("-1234.5"), config))
+    }
+
+    @Test
+    fun `format result never shows a negative zero`() {
+        assertEquals("0", CalculatorFormatter.formatResult(success("-0.001")))
+    }
 }

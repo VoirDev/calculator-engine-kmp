@@ -1,58 +1,74 @@
 package dev.voir.calculator.engine.format
 
-import dev.voir.calculator.engine.CalculatorOperationSymbol
 import dev.voir.decimal.Rounding
 
 /**
  * Display settings used only when formatting calculator state.
+ *
+ * Formula numbers are always shown exactly as typed, with separators applied; only results use
+ * [maximumFractionDigits], [minimumFractionDigits], and [rounding].
+ *
+ * @property decimalSeparator Character rendered and accepted as the decimal separator.
+ * @property groupingSeparator Character inserted every three integer digits and ignored when
+ * normalizing, or `null` to disable grouping.
+ * @property negativeSign Character rendered and accepted for a negative number's sign. It may equal
+ * [CalculatorOperationSymbols.subtract]; normalizing tells them apart by position.
+ * @property maximumFractionDigits Maximum fractional digits shown in a formatted result, from `0`
+ * through `32767`.
+ * @property minimumFractionDigits Minimum fractional digits shown in a formatted result, padded with
+ * zeros; at most [maximumFractionDigits].
+ * @property rounding Rounding applied to results with more than [maximumFractionDigits] digits.
+ * @property operationSymbols Characters rendered and accepted for each operation.
+ * @property emptyLabel Text for a result that is still empty, or `null` to show zero.
+ * @property errorLabel Text for a failed calculation, unless a formatter call supplies per-error
+ * labels.
+ * @throws IllegalArgumentException When a separator, sign, or symbol is a digit or whitespace
+ * (grouping may be whitespace), when two of them collide, or when fraction digits are out of range.
  */
-data class CalculatorFormatConfig(
-    /** Character rendered and accepted as the decimal separator in formatted text. */
-    val decimalSeparator: Char = '.',
-    /** Grouping separator rendered and ignored during formatted parsing. */
-    val groupingSeparator: Char = ' ',
-    /** Maximum fractional precision shown in formatted results. */
-    val maxDecimals: Int = 2,
-    /** Minimum fractional precision shown in formatted numbers. */
-    val minimumFractionDigits: Int = 0,
-    /** Rounding behavior used when formatting results. */
-    val rounding: Rounding = Rounding.HALF_UP,
-    /** Mapping between calculator operations and user-facing operation characters. */
-    val operationSymbols: CalculatorOperationSymbol = CalculatorOperationSymbol(),
-    /** Label used when formatting a failed calculation result. */
-    val errorLabel: String = "Error",
+public data class CalculatorFormatConfig(
+    public val decimalSeparator: Char = '.',
+    public val groupingSeparator: Char? = ' ',
+    public val negativeSign: Char = '-',
+    public val maximumFractionDigits: Int = 2,
+    public val minimumFractionDigits: Int = 0,
+    public val rounding: Rounding = Rounding.HALF_UP,
+    public val operationSymbols: CalculatorOperationSymbols = CalculatorOperationSymbols(),
+    public val emptyLabel: String? = null,
+    public val errorLabel: String = "Error",
 ) {
     init {
-        require(decimalSeparator != groupingSeparator) {
-            "decimalSeparator must not be equal to groupingSeparator"
+        require(!decimalSeparator.isDigit() && !decimalSeparator.isWhitespace()) {
+            "decimalSeparator must not be a digit or whitespace, was '$decimalSeparator'."
         }
-        require(!decimalSeparator.isWhitespace()) {
-            "decimalSeparator must not be whitespace"
+        if (groupingSeparator != null) {
+            require(!groupingSeparator.isDigit()) { "groupingSeparator must not be a digit, was '$groupingSeparator'." }
+            require(groupingSeparator != decimalSeparator) { "groupingSeparator must differ from decimalSeparator." }
         }
-        require(minimumFractionDigits in 0..9) {
-            "minimumFractionDigits must be between 0 and 9."
+        require(!negativeSign.isDigit() && !negativeSign.isWhitespace()) {
+            "negativeSign must not be a digit or whitespace, was '$negativeSign'."
         }
-        require(maxDecimals in 0..9) { "maxDecimals must be between 0 and 9." }
-        require(minimumFractionDigits <= maxDecimals) {
-            "minimumFractionDigits must be <= maxDecimals."
+        require(negativeSign != decimalSeparator && negativeSign != groupingSeparator) {
+            "negativeSign must differ from the decimal and grouping separators."
         }
-        val opSymbols = listOf(
-            operationSymbols.add,
-            operationSymbols.subtract,
-            operationSymbols.multiply,
-            operationSymbols.divide
-        )
-        require(opSymbols.distinct().size == opSymbols.size) {
-            "operation symbols must be unique"
+
+        val symbols = operationSymbols.all
+        require(symbols.distinct().size == symbols.size) { "operation symbols must be unique, were $symbols." }
+        require(symbols.none { it.isDigit() || it.isWhitespace() }) {
+            "operation symbols must not be digits or whitespace, were $symbols."
         }
-        require(opSymbols.none { it.isWhitespace() }) {
-            "operation symbols must not be whitespace"
+        require(decimalSeparator !in symbols) { "decimalSeparator must not equal an operation symbol." }
+        require(groupingSeparator !in symbols) { "groupingSeparator must not equal an operation symbol." }
+        require(negativeSign == operationSymbols.subtract || negativeSign !in symbols) {
+            "negativeSign may only equal the subtract symbol among operation symbols."
         }
-        require(decimalSeparator !in opSymbols) {
-            "decimalSeparator must not equal any operation symbol"
+
+        // Decimal accepts fraction digit counts in this range.
+        require(maximumFractionDigits in 0..32767) {
+            "maximumFractionDigits must be between 0 and 32767, was $maximumFractionDigits."
         }
-        require(groupingSeparator !in opSymbols) {
-            "groupingSeparator must not equal any operation symbol"
+        require(minimumFractionDigits in 0..maximumFractionDigits) {
+            "minimumFractionDigits must be between 0 and maximumFractionDigits ($maximumFractionDigits), " +
+                "was $minimumFractionDigits."
         }
     }
 }

@@ -1,0 +1,426 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, macosArm64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <dev.voir:calculator-engine>
+final enum class dev.voir.calculator.engine/CalculatorLogLevel : kotlin/Enum<dev.voir.calculator.engine/CalculatorLogLevel> { // dev.voir.calculator.engine/CalculatorLogLevel|null[0]
+    enum entry Debug // dev.voir.calculator.engine/CalculatorLogLevel.Debug|null[0]
+    enum entry Error // dev.voir.calculator.engine/CalculatorLogLevel.Error|null[0]
+    enum entry Info // dev.voir.calculator.engine/CalculatorLogLevel.Info|null[0]
+    enum entry Warning // dev.voir.calculator.engine/CalculatorLogLevel.Warning|null[0]
+
+    final val entries // dev.voir.calculator.engine/CalculatorLogLevel.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<dev.voir.calculator.engine/CalculatorLogLevel> // dev.voir.calculator.engine/CalculatorLogLevel.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): dev.voir.calculator.engine/CalculatorLogLevel // dev.voir.calculator.engine/CalculatorLogLevel.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<dev.voir.calculator.engine/CalculatorLogLevel> // dev.voir.calculator.engine/CalculatorLogLevel.values|values#static(){}[0]
+}
+
+final enum class dev.voir.calculator.engine/CalculatorOperation : kotlin/Enum<dev.voir.calculator.engine/CalculatorOperation> { // dev.voir.calculator.engine/CalculatorOperation|null[0]
+    enum entry Add // dev.voir.calculator.engine/CalculatorOperation.Add|null[0]
+    enum entry Divide // dev.voir.calculator.engine/CalculatorOperation.Divide|null[0]
+    enum entry Multiply // dev.voir.calculator.engine/CalculatorOperation.Multiply|null[0]
+    enum entry Subtract // dev.voir.calculator.engine/CalculatorOperation.Subtract|null[0]
+
+    final val entries // dev.voir.calculator.engine/CalculatorOperation.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<dev.voir.calculator.engine/CalculatorOperation> // dev.voir.calculator.engine/CalculatorOperation.entries.<get-entries>|<get-entries>#static(){}[0]
+    final val symbol // dev.voir.calculator.engine/CalculatorOperation.symbol|{}symbol[0]
+        final fun <get-symbol>(): kotlin/Char // dev.voir.calculator.engine/CalculatorOperation.symbol.<get-symbol>|<get-symbol>(){}[0]
+
+    final fun valueOf(kotlin/String): dev.voir.calculator.engine/CalculatorOperation // dev.voir.calculator.engine/CalculatorOperation.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<dev.voir.calculator.engine/CalculatorOperation> // dev.voir.calculator.engine/CalculatorOperation.values|values#static(){}[0]
+
+    final object Companion { // dev.voir.calculator.engine/CalculatorOperation.Companion|null[0]
+        final fun fromSymbol(kotlin/Char): dev.voir.calculator.engine/CalculatorOperation // dev.voir.calculator.engine/CalculatorOperation.Companion.fromSymbol|fromSymbol(kotlin.Char){}[0]
+        final fun fromSymbolOrNull(kotlin/Char): dev.voir.calculator.engine/CalculatorOperation? // dev.voir.calculator.engine/CalculatorOperation.Companion.fromSymbolOrNull|fromSymbolOrNull(kotlin.Char){}[0]
+    }
+}
+
+final enum class dev.voir.calculator.engine/CalculatorPrecedence : kotlin/Enum<dev.voir.calculator.engine/CalculatorPrecedence> { // dev.voir.calculator.engine/CalculatorPrecedence|null[0]
+    enum entry Chain // dev.voir.calculator.engine/CalculatorPrecedence.Chain|null[0]
+    enum entry Standard // dev.voir.calculator.engine/CalculatorPrecedence.Standard|null[0]
+
+    final val entries // dev.voir.calculator.engine/CalculatorPrecedence.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<dev.voir.calculator.engine/CalculatorPrecedence> // dev.voir.calculator.engine/CalculatorPrecedence.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): dev.voir.calculator.engine/CalculatorPrecedence // dev.voir.calculator.engine/CalculatorPrecedence.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<dev.voir.calculator.engine/CalculatorPrecedence> // dev.voir.calculator.engine/CalculatorPrecedence.values|values#static(){}[0]
+}
+
+final enum class dev.voir.calculator.engine/FormulaErrorKind : kotlin/Enum<dev.voir.calculator.engine/FormulaErrorKind> { // dev.voir.calculator.engine/FormulaErrorKind|null[0]
+    enum entry IncompleteNumber // dev.voir.calculator.engine/FormulaErrorKind.IncompleteNumber|null[0]
+    enum entry InvalidCharacter // dev.voir.calculator.engine/FormulaErrorKind.InvalidCharacter|null[0]
+    enum entry TooManyDecimals // dev.voir.calculator.engine/FormulaErrorKind.TooManyDecimals|null[0]
+    enum entry UnexpectedNumber // dev.voir.calculator.engine/FormulaErrorKind.UnexpectedNumber|null[0]
+    enum entry UnexpectedOperation // dev.voir.calculator.engine/FormulaErrorKind.UnexpectedOperation|null[0]
+
+    final val entries // dev.voir.calculator.engine/FormulaErrorKind.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<dev.voir.calculator.engine/FormulaErrorKind> // dev.voir.calculator.engine/FormulaErrorKind.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): dev.voir.calculator.engine/FormulaErrorKind // dev.voir.calculator.engine/FormulaErrorKind.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<dev.voir.calculator.engine/FormulaErrorKind> // dev.voir.calculator.engine/FormulaErrorKind.values|values#static(){}[0]
+}
+
+final enum class dev.voir.calculator.engine/InputRejection : kotlin/Enum<dev.voir.calculator.engine/InputRejection> { // dev.voir.calculator.engine/InputRejection|null[0]
+    enum entry DecimalLimitReached // dev.voir.calculator.engine/InputRejection.DecimalLimitReached|null[0]
+    enum entry DecimalsDisabled // dev.voir.calculator.engine/InputRejection.DecimalsDisabled|null[0]
+    enum entry DigitLimitReached // dev.voir.calculator.engine/InputRejection.DigitLimitReached|null[0]
+    enum entry DuplicateDecimalSeparator // dev.voir.calculator.engine/InputRejection.DuplicateDecimalSeparator|null[0]
+    enum entry MissingOperand // dev.voir.calculator.engine/InputRejection.MissingOperand|null[0]
+    enum entry NoChange // dev.voir.calculator.engine/InputRejection.NoChange|null[0]
+    enum entry NothingToRemove // dev.voir.calculator.engine/InputRejection.NothingToRemove|null[0]
+
+    final val entries // dev.voir.calculator.engine/InputRejection.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<dev.voir.calculator.engine/InputRejection> // dev.voir.calculator.engine/InputRejection.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): dev.voir.calculator.engine/InputRejection // dev.voir.calculator.engine/InputRejection.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<dev.voir.calculator.engine/InputRejection> // dev.voir.calculator.engine/InputRejection.values|values#static(){}[0]
+}
+
+abstract fun interface dev.voir.calculator.engine/CalculatorLogger { // dev.voir.calculator.engine/CalculatorLogger|null[0]
+    abstract fun log(dev.voir.calculator.engine/CalculatorLogLevel, kotlin/Function0<kotlin/String>) // dev.voir.calculator.engine/CalculatorLogger.log|log(dev.voir.calculator.engine.CalculatorLogLevel;kotlin.Function0<kotlin.String>){}[0]
+
+    final object Companion { // dev.voir.calculator.engine/CalculatorLogger.Companion|null[0]
+        final val None // dev.voir.calculator.engine/CalculatorLogger.Companion.None|{}None[0]
+            final fun <get-None>(): dev.voir.calculator.engine/CalculatorLogger // dev.voir.calculator.engine/CalculatorLogger.Companion.None.<get-None>|<get-None>(){}[0]
+    }
+}
+
+abstract interface dev.voir.calculator.engine/CalculatorApi { // dev.voir.calculator.engine/CalculatorApi|null[0]
+    abstract val config // dev.voir.calculator.engine/CalculatorApi.config|{}config[0]
+        abstract fun <get-config>(): kotlinx.coroutines.flow/StateFlow<dev.voir.calculator.engine/CalculatorConfig> // dev.voir.calculator.engine/CalculatorApi.config.<get-config>|<get-config>(){}[0]
+    abstract val formula // dev.voir.calculator.engine/CalculatorApi.formula|{}formula[0]
+        abstract fun <get-formula>(): kotlinx.coroutines.flow/StateFlow<kotlin/String> // dev.voir.calculator.engine/CalculatorApi.formula.<get-formula>|<get-formula>(){}[0]
+    abstract val result // dev.voir.calculator.engine/CalculatorApi.result|{}result[0]
+        abstract fun <get-result>(): kotlinx.coroutines.flow/StateFlow<dev.voir.calculator.engine/CalculatorResult> // dev.voir.calculator.engine/CalculatorApi.result.<get-result>|<get-result>(){}[0]
+    abstract val state // dev.voir.calculator.engine/CalculatorApi.state|{}state[0]
+        abstract fun <get-state>(): kotlinx.coroutines.flow/StateFlow<dev.voir.calculator.engine/CalculatorState> // dev.voir.calculator.engine/CalculatorApi.state.<get-state>|<get-state>(){}[0]
+
+    abstract fun clear(): dev.voir.calculator.engine/InputResult // dev.voir.calculator.engine/CalculatorApi.clear|clear(){}[0]
+    abstract fun deleteLast(): dev.voir.calculator.engine/InputResult // dev.voir.calculator.engine/CalculatorApi.deleteLast|deleteLast(){}[0]
+    abstract fun evaluate(): dev.voir.calculator.engine/CalculatorResult // dev.voir.calculator.engine/CalculatorApi.evaluate|evaluate(){}[0]
+    abstract fun inputDecimalSeparator(): dev.voir.calculator.engine/InputResult // dev.voir.calculator.engine/CalculatorApi.inputDecimalSeparator|inputDecimalSeparator(){}[0]
+    abstract fun inputDigit(kotlin/Char): dev.voir.calculator.engine/InputResult // dev.voir.calculator.engine/CalculatorApi.inputDigit|inputDigit(kotlin.Char){}[0]
+    abstract fun inputOperation(dev.voir.calculator.engine/CalculatorOperation): dev.voir.calculator.engine/InputResult // dev.voir.calculator.engine/CalculatorApi.inputOperation|inputOperation(dev.voir.calculator.engine.CalculatorOperation){}[0]
+    abstract fun setConfig(dev.voir.calculator.engine/CalculatorConfig) // dev.voir.calculator.engine/CalculatorApi.setConfig|setConfig(dev.voir.calculator.engine.CalculatorConfig){}[0]
+    abstract fun setFormula(kotlin/String) // dev.voir.calculator.engine/CalculatorApi.setFormula|setFormula(kotlin.String){}[0]
+    abstract fun trySetFormula(kotlin/String): dev.voir.calculator.engine/FormulaUpdate // dev.voir.calculator.engine/CalculatorApi.trySetFormula|trySetFormula(kotlin.String){}[0]
+    abstract fun updateConfig(kotlin/Function1<dev.voir.calculator.engine/CalculatorConfig, dev.voir.calculator.engine/CalculatorConfig>) // dev.voir.calculator.engine/CalculatorApi.updateConfig|updateConfig(kotlin.Function1<dev.voir.calculator.engine.CalculatorConfig,dev.voir.calculator.engine.CalculatorConfig>){}[0]
+}
+
+sealed interface dev.voir.calculator.engine/CalculatorError { // dev.voir.calculator.engine/CalculatorError|null[0]
+    final class ArithmeticFailure : dev.voir.calculator.engine/CalculatorError { // dev.voir.calculator.engine/CalculatorError.ArithmeticFailure|null[0]
+        constructor <init>(dev.voir.calculator.engine/CalculatorOperation) // dev.voir.calculator.engine/CalculatorError.ArithmeticFailure.<init>|<init>(dev.voir.calculator.engine.CalculatorOperation){}[0]
+
+        final val operation // dev.voir.calculator.engine/CalculatorError.ArithmeticFailure.operation|{}operation[0]
+            final fun <get-operation>(): dev.voir.calculator.engine/CalculatorOperation // dev.voir.calculator.engine/CalculatorError.ArithmeticFailure.operation.<get-operation>|<get-operation>(){}[0]
+
+        final fun component1(): dev.voir.calculator.engine/CalculatorOperation // dev.voir.calculator.engine/CalculatorError.ArithmeticFailure.component1|component1(){}[0]
+        final fun copy(dev.voir.calculator.engine/CalculatorOperation = ...): dev.voir.calculator.engine/CalculatorError.ArithmeticFailure // dev.voir.calculator.engine/CalculatorError.ArithmeticFailure.copy|copy(dev.voir.calculator.engine.CalculatorOperation){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.voir.calculator.engine/CalculatorError.ArithmeticFailure.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.voir.calculator.engine/CalculatorError.ArithmeticFailure.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.voir.calculator.engine/CalculatorError.ArithmeticFailure.toString|toString(){}[0]
+    }
+
+    final class InvalidNumber : dev.voir.calculator.engine/CalculatorError { // dev.voir.calculator.engine/CalculatorError.InvalidNumber|null[0]
+        constructor <init>(kotlin/String) // dev.voir.calculator.engine/CalculatorError.InvalidNumber.<init>|<init>(kotlin.String){}[0]
+
+        final val text // dev.voir.calculator.engine/CalculatorError.InvalidNumber.text|{}text[0]
+            final fun <get-text>(): kotlin/String // dev.voir.calculator.engine/CalculatorError.InvalidNumber.text.<get-text>|<get-text>(){}[0]
+
+        final fun component1(): kotlin/String // dev.voir.calculator.engine/CalculatorError.InvalidNumber.component1|component1(){}[0]
+        final fun copy(kotlin/String = ...): dev.voir.calculator.engine/CalculatorError.InvalidNumber // dev.voir.calculator.engine/CalculatorError.InvalidNumber.copy|copy(kotlin.String){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.voir.calculator.engine/CalculatorError.InvalidNumber.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.voir.calculator.engine/CalculatorError.InvalidNumber.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.voir.calculator.engine/CalculatorError.InvalidNumber.toString|toString(){}[0]
+    }
+
+    final object DivisionByZero : dev.voir.calculator.engine/CalculatorError { // dev.voir.calculator.engine/CalculatorError.DivisionByZero|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.voir.calculator.engine/CalculatorError.DivisionByZero.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.voir.calculator.engine/CalculatorError.DivisionByZero.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.voir.calculator.engine/CalculatorError.DivisionByZero.toString|toString(){}[0]
+    }
+}
+
+sealed interface dev.voir.calculator.engine/CalculatorResult { // dev.voir.calculator.engine/CalculatorResult|null[0]
+    final class Error : dev.voir.calculator.engine/CalculatorResult { // dev.voir.calculator.engine/CalculatorResult.Error|null[0]
+        constructor <init>(dev.voir.calculator.engine/CalculatorError) // dev.voir.calculator.engine/CalculatorResult.Error.<init>|<init>(dev.voir.calculator.engine.CalculatorError){}[0]
+
+        final val error // dev.voir.calculator.engine/CalculatorResult.Error.error|{}error[0]
+            final fun <get-error>(): dev.voir.calculator.engine/CalculatorError // dev.voir.calculator.engine/CalculatorResult.Error.error.<get-error>|<get-error>(){}[0]
+
+        final fun component1(): dev.voir.calculator.engine/CalculatorError // dev.voir.calculator.engine/CalculatorResult.Error.component1|component1(){}[0]
+        final fun copy(dev.voir.calculator.engine/CalculatorError = ...): dev.voir.calculator.engine/CalculatorResult.Error // dev.voir.calculator.engine/CalculatorResult.Error.copy|copy(dev.voir.calculator.engine.CalculatorError){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.voir.calculator.engine/CalculatorResult.Error.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.voir.calculator.engine/CalculatorResult.Error.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.voir.calculator.engine/CalculatorResult.Error.toString|toString(){}[0]
+    }
+
+    final class Success : dev.voir.calculator.engine/CalculatorResult { // dev.voir.calculator.engine/CalculatorResult.Success|null[0]
+        constructor <init>(dev.voir.decimal/Decimal) // dev.voir.calculator.engine/CalculatorResult.Success.<init>|<init>(dev.voir.decimal.Decimal){}[0]
+
+        final val value // dev.voir.calculator.engine/CalculatorResult.Success.value|{}value[0]
+            final fun <get-value>(): dev.voir.decimal/Decimal // dev.voir.calculator.engine/CalculatorResult.Success.value.<get-value>|<get-value>(){}[0]
+
+        final fun component1(): dev.voir.decimal/Decimal // dev.voir.calculator.engine/CalculatorResult.Success.component1|component1(){}[0]
+        final fun copy(dev.voir.decimal/Decimal = ...): dev.voir.calculator.engine/CalculatorResult.Success // dev.voir.calculator.engine/CalculatorResult.Success.copy|copy(dev.voir.decimal.Decimal){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.voir.calculator.engine/CalculatorResult.Success.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.voir.calculator.engine/CalculatorResult.Success.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.voir.calculator.engine/CalculatorResult.Success.toString|toString(){}[0]
+    }
+
+    final object Empty : dev.voir.calculator.engine/CalculatorResult { // dev.voir.calculator.engine/CalculatorResult.Empty|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.voir.calculator.engine/CalculatorResult.Empty.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.voir.calculator.engine/CalculatorResult.Empty.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.voir.calculator.engine/CalculatorResult.Empty.toString|toString(){}[0]
+    }
+}
+
+sealed interface dev.voir.calculator.engine/FormulaUpdate { // dev.voir.calculator.engine/FormulaUpdate|null[0]
+    final class Invalid : dev.voir.calculator.engine/FormulaUpdate { // dev.voir.calculator.engine/FormulaUpdate.Invalid|null[0]
+        constructor <init>(dev.voir.calculator.engine/FormulaError) // dev.voir.calculator.engine/FormulaUpdate.Invalid.<init>|<init>(dev.voir.calculator.engine.FormulaError){}[0]
+
+        final val error // dev.voir.calculator.engine/FormulaUpdate.Invalid.error|{}error[0]
+            final fun <get-error>(): dev.voir.calculator.engine/FormulaError // dev.voir.calculator.engine/FormulaUpdate.Invalid.error.<get-error>|<get-error>(){}[0]
+
+        final fun component1(): dev.voir.calculator.engine/FormulaError // dev.voir.calculator.engine/FormulaUpdate.Invalid.component1|component1(){}[0]
+        final fun copy(dev.voir.calculator.engine/FormulaError = ...): dev.voir.calculator.engine/FormulaUpdate.Invalid // dev.voir.calculator.engine/FormulaUpdate.Invalid.copy|copy(dev.voir.calculator.engine.FormulaError){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.voir.calculator.engine/FormulaUpdate.Invalid.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.voir.calculator.engine/FormulaUpdate.Invalid.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.voir.calculator.engine/FormulaUpdate.Invalid.toString|toString(){}[0]
+    }
+
+    final object Changed : dev.voir.calculator.engine/FormulaUpdate { // dev.voir.calculator.engine/FormulaUpdate.Changed|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.voir.calculator.engine/FormulaUpdate.Changed.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.voir.calculator.engine/FormulaUpdate.Changed.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.voir.calculator.engine/FormulaUpdate.Changed.toString|toString(){}[0]
+    }
+
+    final object Unchanged : dev.voir.calculator.engine/FormulaUpdate { // dev.voir.calculator.engine/FormulaUpdate.Unchanged|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.voir.calculator.engine/FormulaUpdate.Unchanged.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.voir.calculator.engine/FormulaUpdate.Unchanged.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.voir.calculator.engine/FormulaUpdate.Unchanged.toString|toString(){}[0]
+    }
+}
+
+sealed interface dev.voir.calculator.engine/InputResult { // dev.voir.calculator.engine/InputResult|null[0]
+    abstract val isAccepted // dev.voir.calculator.engine/InputResult.isAccepted|{}isAccepted[0]
+        abstract fun <get-isAccepted>(): kotlin/Boolean // dev.voir.calculator.engine/InputResult.isAccepted.<get-isAccepted>|<get-isAccepted>(){}[0]
+
+    final class Rejected : dev.voir.calculator.engine/InputResult { // dev.voir.calculator.engine/InputResult.Rejected|null[0]
+        constructor <init>(dev.voir.calculator.engine/InputRejection) // dev.voir.calculator.engine/InputResult.Rejected.<init>|<init>(dev.voir.calculator.engine.InputRejection){}[0]
+
+        final val isAccepted // dev.voir.calculator.engine/InputResult.Rejected.isAccepted|{}isAccepted[0]
+            final fun <get-isAccepted>(): kotlin/Boolean // dev.voir.calculator.engine/InputResult.Rejected.isAccepted.<get-isAccepted>|<get-isAccepted>(){}[0]
+        final val reason // dev.voir.calculator.engine/InputResult.Rejected.reason|{}reason[0]
+            final fun <get-reason>(): dev.voir.calculator.engine/InputRejection // dev.voir.calculator.engine/InputResult.Rejected.reason.<get-reason>|<get-reason>(){}[0]
+
+        final fun component1(): dev.voir.calculator.engine/InputRejection // dev.voir.calculator.engine/InputResult.Rejected.component1|component1(){}[0]
+        final fun copy(dev.voir.calculator.engine/InputRejection = ...): dev.voir.calculator.engine/InputResult.Rejected // dev.voir.calculator.engine/InputResult.Rejected.copy|copy(dev.voir.calculator.engine.InputRejection){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.voir.calculator.engine/InputResult.Rejected.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.voir.calculator.engine/InputResult.Rejected.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.voir.calculator.engine/InputResult.Rejected.toString|toString(){}[0]
+    }
+
+    final object Accepted : dev.voir.calculator.engine/InputResult { // dev.voir.calculator.engine/InputResult.Accepted|null[0]
+        final val isAccepted // dev.voir.calculator.engine/InputResult.Accepted.isAccepted|{}isAccepted[0]
+            final fun <get-isAccepted>(): kotlin/Boolean // dev.voir.calculator.engine/InputResult.Accepted.isAccepted.<get-isAccepted>|<get-isAccepted>(){}[0]
+
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.voir.calculator.engine/InputResult.Accepted.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.voir.calculator.engine/InputResult.Accepted.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.voir.calculator.engine/InputResult.Accepted.toString|toString(){}[0]
+    }
+}
+
+final class dev.voir.calculator.engine.format/CalculatorDisplay { // dev.voir.calculator.engine.format/CalculatorDisplay|null[0]
+    constructor <init>(kotlin/String, kotlin/String, kotlin/Boolean) // dev.voir.calculator.engine.format/CalculatorDisplay.<init>|<init>(kotlin.String;kotlin.String;kotlin.Boolean){}[0]
+
+    final val formula // dev.voir.calculator.engine.format/CalculatorDisplay.formula|{}formula[0]
+        final fun <get-formula>(): kotlin/String // dev.voir.calculator.engine.format/CalculatorDisplay.formula.<get-formula>|<get-formula>(){}[0]
+    final val isShowingResult // dev.voir.calculator.engine.format/CalculatorDisplay.isShowingResult|{}isShowingResult[0]
+        final fun <get-isShowingResult>(): kotlin/Boolean // dev.voir.calculator.engine.format/CalculatorDisplay.isShowingResult.<get-isShowingResult>|<get-isShowingResult>(){}[0]
+    final val result // dev.voir.calculator.engine.format/CalculatorDisplay.result|{}result[0]
+        final fun <get-result>(): kotlin/String // dev.voir.calculator.engine.format/CalculatorDisplay.result.<get-result>|<get-result>(){}[0]
+
+    final fun component1(): kotlin/String // dev.voir.calculator.engine.format/CalculatorDisplay.component1|component1(){}[0]
+    final fun component2(): kotlin/String // dev.voir.calculator.engine.format/CalculatorDisplay.component2|component2(){}[0]
+    final fun component3(): kotlin/Boolean // dev.voir.calculator.engine.format/CalculatorDisplay.component3|component3(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/String = ..., kotlin/Boolean = ...): dev.voir.calculator.engine.format/CalculatorDisplay // dev.voir.calculator.engine.format/CalculatorDisplay.copy|copy(kotlin.String;kotlin.String;kotlin.Boolean){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.voir.calculator.engine.format/CalculatorDisplay.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.voir.calculator.engine.format/CalculatorDisplay.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.voir.calculator.engine.format/CalculatorDisplay.toString|toString(){}[0]
+}
+
+final class dev.voir.calculator.engine.format/CalculatorFormatConfig { // dev.voir.calculator.engine.format/CalculatorFormatConfig|null[0]
+    constructor <init>(kotlin/Char = ..., kotlin/Char? = ..., kotlin/Char = ..., kotlin/Int = ..., kotlin/Int = ..., dev.voir.decimal/Rounding = ..., dev.voir.calculator.engine.format/CalculatorOperationSymbols = ..., kotlin/String? = ..., kotlin/String = ...) // dev.voir.calculator.engine.format/CalculatorFormatConfig.<init>|<init>(kotlin.Char;kotlin.Char?;kotlin.Char;kotlin.Int;kotlin.Int;dev.voir.decimal.Rounding;dev.voir.calculator.engine.format.CalculatorOperationSymbols;kotlin.String?;kotlin.String){}[0]
+
+    final val decimalSeparator // dev.voir.calculator.engine.format/CalculatorFormatConfig.decimalSeparator|{}decimalSeparator[0]
+        final fun <get-decimalSeparator>(): kotlin/Char // dev.voir.calculator.engine.format/CalculatorFormatConfig.decimalSeparator.<get-decimalSeparator>|<get-decimalSeparator>(){}[0]
+    final val emptyLabel // dev.voir.calculator.engine.format/CalculatorFormatConfig.emptyLabel|{}emptyLabel[0]
+        final fun <get-emptyLabel>(): kotlin/String? // dev.voir.calculator.engine.format/CalculatorFormatConfig.emptyLabel.<get-emptyLabel>|<get-emptyLabel>(){}[0]
+    final val errorLabel // dev.voir.calculator.engine.format/CalculatorFormatConfig.errorLabel|{}errorLabel[0]
+        final fun <get-errorLabel>(): kotlin/String // dev.voir.calculator.engine.format/CalculatorFormatConfig.errorLabel.<get-errorLabel>|<get-errorLabel>(){}[0]
+    final val groupingSeparator // dev.voir.calculator.engine.format/CalculatorFormatConfig.groupingSeparator|{}groupingSeparator[0]
+        final fun <get-groupingSeparator>(): kotlin/Char? // dev.voir.calculator.engine.format/CalculatorFormatConfig.groupingSeparator.<get-groupingSeparator>|<get-groupingSeparator>(){}[0]
+    final val maximumFractionDigits // dev.voir.calculator.engine.format/CalculatorFormatConfig.maximumFractionDigits|{}maximumFractionDigits[0]
+        final fun <get-maximumFractionDigits>(): kotlin/Int // dev.voir.calculator.engine.format/CalculatorFormatConfig.maximumFractionDigits.<get-maximumFractionDigits>|<get-maximumFractionDigits>(){}[0]
+    final val minimumFractionDigits // dev.voir.calculator.engine.format/CalculatorFormatConfig.minimumFractionDigits|{}minimumFractionDigits[0]
+        final fun <get-minimumFractionDigits>(): kotlin/Int // dev.voir.calculator.engine.format/CalculatorFormatConfig.minimumFractionDigits.<get-minimumFractionDigits>|<get-minimumFractionDigits>(){}[0]
+    final val negativeSign // dev.voir.calculator.engine.format/CalculatorFormatConfig.negativeSign|{}negativeSign[0]
+        final fun <get-negativeSign>(): kotlin/Char // dev.voir.calculator.engine.format/CalculatorFormatConfig.negativeSign.<get-negativeSign>|<get-negativeSign>(){}[0]
+    final val operationSymbols // dev.voir.calculator.engine.format/CalculatorFormatConfig.operationSymbols|{}operationSymbols[0]
+        final fun <get-operationSymbols>(): dev.voir.calculator.engine.format/CalculatorOperationSymbols // dev.voir.calculator.engine.format/CalculatorFormatConfig.operationSymbols.<get-operationSymbols>|<get-operationSymbols>(){}[0]
+    final val rounding // dev.voir.calculator.engine.format/CalculatorFormatConfig.rounding|{}rounding[0]
+        final fun <get-rounding>(): dev.voir.decimal/Rounding // dev.voir.calculator.engine.format/CalculatorFormatConfig.rounding.<get-rounding>|<get-rounding>(){}[0]
+
+    final fun component1(): kotlin/Char // dev.voir.calculator.engine.format/CalculatorFormatConfig.component1|component1(){}[0]
+    final fun component2(): kotlin/Char? // dev.voir.calculator.engine.format/CalculatorFormatConfig.component2|component2(){}[0]
+    final fun component3(): kotlin/Char // dev.voir.calculator.engine.format/CalculatorFormatConfig.component3|component3(){}[0]
+    final fun component4(): kotlin/Int // dev.voir.calculator.engine.format/CalculatorFormatConfig.component4|component4(){}[0]
+    final fun component5(): kotlin/Int // dev.voir.calculator.engine.format/CalculatorFormatConfig.component5|component5(){}[0]
+    final fun component6(): dev.voir.decimal/Rounding // dev.voir.calculator.engine.format/CalculatorFormatConfig.component6|component6(){}[0]
+    final fun component7(): dev.voir.calculator.engine.format/CalculatorOperationSymbols // dev.voir.calculator.engine.format/CalculatorFormatConfig.component7|component7(){}[0]
+    final fun component8(): kotlin/String? // dev.voir.calculator.engine.format/CalculatorFormatConfig.component8|component8(){}[0]
+    final fun component9(): kotlin/String // dev.voir.calculator.engine.format/CalculatorFormatConfig.component9|component9(){}[0]
+    final fun copy(kotlin/Char = ..., kotlin/Char? = ..., kotlin/Char = ..., kotlin/Int = ..., kotlin/Int = ..., dev.voir.decimal/Rounding = ..., dev.voir.calculator.engine.format/CalculatorOperationSymbols = ..., kotlin/String? = ..., kotlin/String = ...): dev.voir.calculator.engine.format/CalculatorFormatConfig // dev.voir.calculator.engine.format/CalculatorFormatConfig.copy|copy(kotlin.Char;kotlin.Char?;kotlin.Char;kotlin.Int;kotlin.Int;dev.voir.decimal.Rounding;dev.voir.calculator.engine.format.CalculatorOperationSymbols;kotlin.String?;kotlin.String){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.voir.calculator.engine.format/CalculatorFormatConfig.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.voir.calculator.engine.format/CalculatorFormatConfig.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.voir.calculator.engine.format/CalculatorFormatConfig.toString|toString(){}[0]
+}
+
+final class dev.voir.calculator.engine.format/CalculatorOperationSymbols { // dev.voir.calculator.engine.format/CalculatorOperationSymbols|null[0]
+    constructor <init>(kotlin/Char = ..., kotlin/Char = ..., kotlin/Char = ..., kotlin/Char = ...) // dev.voir.calculator.engine.format/CalculatorOperationSymbols.<init>|<init>(kotlin.Char;kotlin.Char;kotlin.Char;kotlin.Char){}[0]
+
+    final val add // dev.voir.calculator.engine.format/CalculatorOperationSymbols.add|{}add[0]
+        final fun <get-add>(): kotlin/Char // dev.voir.calculator.engine.format/CalculatorOperationSymbols.add.<get-add>|<get-add>(){}[0]
+    final val all // dev.voir.calculator.engine.format/CalculatorOperationSymbols.all|{}all[0]
+        final fun <get-all>(): kotlin.collections/List<kotlin/Char> // dev.voir.calculator.engine.format/CalculatorOperationSymbols.all.<get-all>|<get-all>(){}[0]
+    final val divide // dev.voir.calculator.engine.format/CalculatorOperationSymbols.divide|{}divide[0]
+        final fun <get-divide>(): kotlin/Char // dev.voir.calculator.engine.format/CalculatorOperationSymbols.divide.<get-divide>|<get-divide>(){}[0]
+    final val multiply // dev.voir.calculator.engine.format/CalculatorOperationSymbols.multiply|{}multiply[0]
+        final fun <get-multiply>(): kotlin/Char // dev.voir.calculator.engine.format/CalculatorOperationSymbols.multiply.<get-multiply>|<get-multiply>(){}[0]
+    final val subtract // dev.voir.calculator.engine.format/CalculatorOperationSymbols.subtract|{}subtract[0]
+        final fun <get-subtract>(): kotlin/Char // dev.voir.calculator.engine.format/CalculatorOperationSymbols.subtract.<get-subtract>|<get-subtract>(){}[0]
+
+    final fun component1(): kotlin/Char // dev.voir.calculator.engine.format/CalculatorOperationSymbols.component1|component1(){}[0]
+    final fun component2(): kotlin/Char // dev.voir.calculator.engine.format/CalculatorOperationSymbols.component2|component2(){}[0]
+    final fun component3(): kotlin/Char // dev.voir.calculator.engine.format/CalculatorOperationSymbols.component3|component3(){}[0]
+    final fun component4(): kotlin/Char // dev.voir.calculator.engine.format/CalculatorOperationSymbols.component4|component4(){}[0]
+    final fun copy(kotlin/Char = ..., kotlin/Char = ..., kotlin/Char = ..., kotlin/Char = ...): dev.voir.calculator.engine.format/CalculatorOperationSymbols // dev.voir.calculator.engine.format/CalculatorOperationSymbols.copy|copy(kotlin.Char;kotlin.Char;kotlin.Char;kotlin.Char){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.voir.calculator.engine.format/CalculatorOperationSymbols.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.voir.calculator.engine.format/CalculatorOperationSymbols.hashCode|hashCode(){}[0]
+    final fun symbolFor(dev.voir.calculator.engine/CalculatorOperation): kotlin/Char // dev.voir.calculator.engine.format/CalculatorOperationSymbols.symbolFor|symbolFor(dev.voir.calculator.engine.CalculatorOperation){}[0]
+    final fun toString(): kotlin/String // dev.voir.calculator.engine.format/CalculatorOperationSymbols.toString|toString(){}[0]
+}
+
+final class dev.voir.calculator.engine/Calculator : dev.voir.calculator.engine/CalculatorApi { // dev.voir.calculator.engine/Calculator|null[0]
+    constructor <init>(dev.voir.calculator.engine/CalculatorConfig = ..., dev.voir.calculator.engine/CalculatorLogger = ...) // dev.voir.calculator.engine/Calculator.<init>|<init>(dev.voir.calculator.engine.CalculatorConfig;dev.voir.calculator.engine.CalculatorLogger){}[0]
+
+    final val config // dev.voir.calculator.engine/Calculator.config|{}config[0]
+        final fun <get-config>(): kotlinx.coroutines.flow/StateFlow<dev.voir.calculator.engine/CalculatorConfig> // dev.voir.calculator.engine/Calculator.config.<get-config>|<get-config>(){}[0]
+    final val formula // dev.voir.calculator.engine/Calculator.formula|{}formula[0]
+        final fun <get-formula>(): kotlinx.coroutines.flow/StateFlow<kotlin/String> // dev.voir.calculator.engine/Calculator.formula.<get-formula>|<get-formula>(){}[0]
+    final val result // dev.voir.calculator.engine/Calculator.result|{}result[0]
+        final fun <get-result>(): kotlinx.coroutines.flow/StateFlow<dev.voir.calculator.engine/CalculatorResult> // dev.voir.calculator.engine/Calculator.result.<get-result>|<get-result>(){}[0]
+    final val state // dev.voir.calculator.engine/Calculator.state|{}state[0]
+        final fun <get-state>(): kotlinx.coroutines.flow/StateFlow<dev.voir.calculator.engine/CalculatorState> // dev.voir.calculator.engine/Calculator.state.<get-state>|<get-state>(){}[0]
+
+    final fun clear(): dev.voir.calculator.engine/InputResult // dev.voir.calculator.engine/Calculator.clear|clear(){}[0]
+    final fun deleteLast(): dev.voir.calculator.engine/InputResult // dev.voir.calculator.engine/Calculator.deleteLast|deleteLast(){}[0]
+    final fun evaluate(): dev.voir.calculator.engine/CalculatorResult // dev.voir.calculator.engine/Calculator.evaluate|evaluate(){}[0]
+    final fun inputDecimalSeparator(): dev.voir.calculator.engine/InputResult // dev.voir.calculator.engine/Calculator.inputDecimalSeparator|inputDecimalSeparator(){}[0]
+    final fun inputDigit(kotlin/Char): dev.voir.calculator.engine/InputResult // dev.voir.calculator.engine/Calculator.inputDigit|inputDigit(kotlin.Char){}[0]
+    final fun inputOperation(dev.voir.calculator.engine/CalculatorOperation): dev.voir.calculator.engine/InputResult // dev.voir.calculator.engine/Calculator.inputOperation|inputOperation(dev.voir.calculator.engine.CalculatorOperation){}[0]
+    final fun setConfig(dev.voir.calculator.engine/CalculatorConfig) // dev.voir.calculator.engine/Calculator.setConfig|setConfig(dev.voir.calculator.engine.CalculatorConfig){}[0]
+    final fun setFormula(kotlin/String) // dev.voir.calculator.engine/Calculator.setFormula|setFormula(kotlin.String){}[0]
+    final fun trySetFormula(kotlin/String): dev.voir.calculator.engine/FormulaUpdate // dev.voir.calculator.engine/Calculator.trySetFormula|trySetFormula(kotlin.String){}[0]
+    final fun updateConfig(kotlin/Function1<dev.voir.calculator.engine/CalculatorConfig, dev.voir.calculator.engine/CalculatorConfig>) // dev.voir.calculator.engine/Calculator.updateConfig|updateConfig(kotlin.Function1<dev.voir.calculator.engine.CalculatorConfig,dev.voir.calculator.engine.CalculatorConfig>){}[0]
+}
+
+final class dev.voir.calculator.engine/CalculatorConfig { // dev.voir.calculator.engine/CalculatorConfig|null[0]
+    constructor <init>(kotlin/Int = ..., kotlin/Int = ..., kotlin/Int = ..., dev.voir.calculator.engine/CalculatorPrecedence = ..., dev.voir.decimal/Rounding = ...) // dev.voir.calculator.engine/CalculatorConfig.<init>|<init>(kotlin.Int;kotlin.Int;kotlin.Int;dev.voir.calculator.engine.CalculatorPrecedence;dev.voir.decimal.Rounding){}[0]
+
+    final val divisionScale // dev.voir.calculator.engine/CalculatorConfig.divisionScale|{}divisionScale[0]
+        final fun <get-divisionScale>(): kotlin/Int // dev.voir.calculator.engine/CalculatorConfig.divisionScale.<get-divisionScale>|<get-divisionScale>(){}[0]
+    final val inputMaxDecimals // dev.voir.calculator.engine/CalculatorConfig.inputMaxDecimals|{}inputMaxDecimals[0]
+        final fun <get-inputMaxDecimals>(): kotlin/Int // dev.voir.calculator.engine/CalculatorConfig.inputMaxDecimals.<get-inputMaxDecimals>|<get-inputMaxDecimals>(){}[0]
+    final val inputMaxDigits // dev.voir.calculator.engine/CalculatorConfig.inputMaxDigits|{}inputMaxDigits[0]
+        final fun <get-inputMaxDigits>(): kotlin/Int // dev.voir.calculator.engine/CalculatorConfig.inputMaxDigits.<get-inputMaxDigits>|<get-inputMaxDigits>(){}[0]
+    final val precedence // dev.voir.calculator.engine/CalculatorConfig.precedence|{}precedence[0]
+        final fun <get-precedence>(): dev.voir.calculator.engine/CalculatorPrecedence // dev.voir.calculator.engine/CalculatorConfig.precedence.<get-precedence>|<get-precedence>(){}[0]
+    final val rounding // dev.voir.calculator.engine/CalculatorConfig.rounding|{}rounding[0]
+        final fun <get-rounding>(): dev.voir.decimal/Rounding // dev.voir.calculator.engine/CalculatorConfig.rounding.<get-rounding>|<get-rounding>(){}[0]
+
+    final fun component1(): kotlin/Int // dev.voir.calculator.engine/CalculatorConfig.component1|component1(){}[0]
+    final fun component2(): kotlin/Int // dev.voir.calculator.engine/CalculatorConfig.component2|component2(){}[0]
+    final fun component3(): kotlin/Int // dev.voir.calculator.engine/CalculatorConfig.component3|component3(){}[0]
+    final fun component4(): dev.voir.calculator.engine/CalculatorPrecedence // dev.voir.calculator.engine/CalculatorConfig.component4|component4(){}[0]
+    final fun component5(): dev.voir.decimal/Rounding // dev.voir.calculator.engine/CalculatorConfig.component5|component5(){}[0]
+    final fun copy(kotlin/Int = ..., kotlin/Int = ..., kotlin/Int = ..., dev.voir.calculator.engine/CalculatorPrecedence = ..., dev.voir.decimal/Rounding = ...): dev.voir.calculator.engine/CalculatorConfig // dev.voir.calculator.engine/CalculatorConfig.copy|copy(kotlin.Int;kotlin.Int;kotlin.Int;dev.voir.calculator.engine.CalculatorPrecedence;dev.voir.decimal.Rounding){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.voir.calculator.engine/CalculatorConfig.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.voir.calculator.engine/CalculatorConfig.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.voir.calculator.engine/CalculatorConfig.toString|toString(){}[0]
+}
+
+final class dev.voir.calculator.engine/CalculatorState { // dev.voir.calculator.engine/CalculatorState|null[0]
+    constructor <init>(kotlin/String = ..., dev.voir.calculator.engine/CalculatorResult = ..., dev.voir.calculator.engine/CalculatorConfig = ..., kotlin/Boolean = ...) // dev.voir.calculator.engine/CalculatorState.<init>|<init>(kotlin.String;dev.voir.calculator.engine.CalculatorResult;dev.voir.calculator.engine.CalculatorConfig;kotlin.Boolean){}[0]
+
+    final val config // dev.voir.calculator.engine/CalculatorState.config|{}config[0]
+        final fun <get-config>(): dev.voir.calculator.engine/CalculatorConfig // dev.voir.calculator.engine/CalculatorState.config.<get-config>|<get-config>(){}[0]
+    final val formula // dev.voir.calculator.engine/CalculatorState.formula|{}formula[0]
+        final fun <get-formula>(): kotlin/String // dev.voir.calculator.engine/CalculatorState.formula.<get-formula>|<get-formula>(){}[0]
+    final val isShowingResult // dev.voir.calculator.engine/CalculatorState.isShowingResult|{}isShowingResult[0]
+        final fun <get-isShowingResult>(): kotlin/Boolean // dev.voir.calculator.engine/CalculatorState.isShowingResult.<get-isShowingResult>|<get-isShowingResult>(){}[0]
+    final val result // dev.voir.calculator.engine/CalculatorState.result|{}result[0]
+        final fun <get-result>(): dev.voir.calculator.engine/CalculatorResult // dev.voir.calculator.engine/CalculatorState.result.<get-result>|<get-result>(){}[0]
+
+    final fun component1(): kotlin/String // dev.voir.calculator.engine/CalculatorState.component1|component1(){}[0]
+    final fun component2(): dev.voir.calculator.engine/CalculatorResult // dev.voir.calculator.engine/CalculatorState.component2|component2(){}[0]
+    final fun component3(): dev.voir.calculator.engine/CalculatorConfig // dev.voir.calculator.engine/CalculatorState.component3|component3(){}[0]
+    final fun component4(): kotlin/Boolean // dev.voir.calculator.engine/CalculatorState.component4|component4(){}[0]
+    final fun copy(kotlin/String = ..., dev.voir.calculator.engine/CalculatorResult = ..., dev.voir.calculator.engine/CalculatorConfig = ..., kotlin/Boolean = ...): dev.voir.calculator.engine/CalculatorState // dev.voir.calculator.engine/CalculatorState.copy|copy(kotlin.String;dev.voir.calculator.engine.CalculatorResult;dev.voir.calculator.engine.CalculatorConfig;kotlin.Boolean){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.voir.calculator.engine/CalculatorState.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.voir.calculator.engine/CalculatorState.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.voir.calculator.engine/CalculatorState.toString|toString(){}[0]
+}
+
+final class dev.voir.calculator.engine/FormulaError { // dev.voir.calculator.engine/FormulaError|null[0]
+    constructor <init>(dev.voir.calculator.engine/FormulaErrorKind, kotlin/Int, kotlin/String) // dev.voir.calculator.engine/FormulaError.<init>|<init>(dev.voir.calculator.engine.FormulaErrorKind;kotlin.Int;kotlin.String){}[0]
+
+    final val kind // dev.voir.calculator.engine/FormulaError.kind|{}kind[0]
+        final fun <get-kind>(): dev.voir.calculator.engine/FormulaErrorKind // dev.voir.calculator.engine/FormulaError.kind.<get-kind>|<get-kind>(){}[0]
+    final val message // dev.voir.calculator.engine/FormulaError.message|{}message[0]
+        final fun <get-message>(): kotlin/String // dev.voir.calculator.engine/FormulaError.message.<get-message>|<get-message>(){}[0]
+    final val position // dev.voir.calculator.engine/FormulaError.position|{}position[0]
+        final fun <get-position>(): kotlin/Int // dev.voir.calculator.engine/FormulaError.position.<get-position>|<get-position>(){}[0]
+    final val text // dev.voir.calculator.engine/FormulaError.text|{}text[0]
+        final fun <get-text>(): kotlin/String // dev.voir.calculator.engine/FormulaError.text.<get-text>|<get-text>(){}[0]
+
+    final fun component1(): dev.voir.calculator.engine/FormulaErrorKind // dev.voir.calculator.engine/FormulaError.component1|component1(){}[0]
+    final fun component2(): kotlin/Int // dev.voir.calculator.engine/FormulaError.component2|component2(){}[0]
+    final fun component3(): kotlin/String // dev.voir.calculator.engine/FormulaError.component3|component3(){}[0]
+    final fun copy(dev.voir.calculator.engine/FormulaErrorKind = ..., kotlin/Int = ..., kotlin/String = ...): dev.voir.calculator.engine/FormulaError // dev.voir.calculator.engine/FormulaError.copy|copy(dev.voir.calculator.engine.FormulaErrorKind;kotlin.Int;kotlin.String){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.voir.calculator.engine/FormulaError.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.voir.calculator.engine/FormulaError.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.voir.calculator.engine/FormulaError.toString|toString(){}[0]
+}
+
+final class dev.voir.calculator.engine/FormulaSyntaxException : kotlin/IllegalArgumentException { // dev.voir.calculator.engine/FormulaSyntaxException|null[0]
+    constructor <init>(dev.voir.calculator.engine/FormulaError) // dev.voir.calculator.engine/FormulaSyntaxException.<init>|<init>(dev.voir.calculator.engine.FormulaError){}[0]
+
+    final val error // dev.voir.calculator.engine/FormulaSyntaxException.error|{}error[0]
+        final fun <get-error>(): dev.voir.calculator.engine/FormulaError // dev.voir.calculator.engine/FormulaSyntaxException.error.<get-error>|<get-error>(){}[0]
+}
+
+final object dev.voir.calculator.engine.format/CalculatorFormatter { // dev.voir.calculator.engine.format/CalculatorFormatter|null[0]
+    final fun format(dev.voir.calculator.engine/CalculatorState, dev.voir.calculator.engine.format/CalculatorFormatConfig = ..., kotlin/Function1<dev.voir.calculator.engine/CalculatorError, kotlin/String> = ...): dev.voir.calculator.engine.format/CalculatorDisplay // dev.voir.calculator.engine.format/CalculatorFormatter.format|format(dev.voir.calculator.engine.CalculatorState;dev.voir.calculator.engine.format.CalculatorFormatConfig;kotlin.Function1<dev.voir.calculator.engine.CalculatorError,kotlin.String>){}[0]
+    final fun formatFormula(kotlin/String, dev.voir.calculator.engine.format/CalculatorFormatConfig = ...): kotlin/String // dev.voir.calculator.engine.format/CalculatorFormatter.formatFormula|formatFormula(kotlin.String;dev.voir.calculator.engine.format.CalculatorFormatConfig){}[0]
+    final fun formatResult(dev.voir.calculator.engine/CalculatorResult, dev.voir.calculator.engine.format/CalculatorFormatConfig = ..., kotlin/Function1<dev.voir.calculator.engine/CalculatorError, kotlin/String> = ...): kotlin/String // dev.voir.calculator.engine.format/CalculatorFormatter.formatResult|formatResult(dev.voir.calculator.engine.CalculatorResult;dev.voir.calculator.engine.format.CalculatorFormatConfig;kotlin.Function1<dev.voir.calculator.engine.CalculatorError,kotlin.String>){}[0]
+    final fun normalizeFormula(kotlin/String, dev.voir.calculator.engine.format/CalculatorFormatConfig = ...): kotlin/String // dev.voir.calculator.engine.format/CalculatorFormatter.normalizeFormula|normalizeFormula(kotlin.String;dev.voir.calculator.engine.format.CalculatorFormatConfig){}[0]
+}
+
+final fun (kotlinx.coroutines.flow/Flow<dev.voir.calculator.engine/CalculatorState>).dev.voir.calculator.engine.format/formatted(dev.voir.calculator.engine.format/CalculatorFormatConfig = ..., kotlin/Function1<dev.voir.calculator.engine/CalculatorError, kotlin/String> = ...): kotlinx.coroutines.flow/Flow<dev.voir.calculator.engine.format/CalculatorDisplay> // dev.voir.calculator.engine.format/formatted|formatted@kotlinx.coroutines.flow.Flow<dev.voir.calculator.engine.CalculatorState>(dev.voir.calculator.engine.format.CalculatorFormatConfig;kotlin.Function1<dev.voir.calculator.engine.CalculatorError,kotlin.String>){}[0]
+final fun (kotlinx.coroutines.flow/Flow<dev.voir.calculator.engine/CalculatorState>).dev.voir.calculator.engine.format/formatted(kotlinx.coroutines.flow/Flow<dev.voir.calculator.engine.format/CalculatorFormatConfig>, kotlin/Function2<dev.voir.calculator.engine/CalculatorError, dev.voir.calculator.engine.format/CalculatorFormatConfig, kotlin/String> = ...): kotlinx.coroutines.flow/Flow<dev.voir.calculator.engine.format/CalculatorDisplay> // dev.voir.calculator.engine.format/formatted|formatted@kotlinx.coroutines.flow.Flow<dev.voir.calculator.engine.CalculatorState>(kotlinx.coroutines.flow.Flow<dev.voir.calculator.engine.format.CalculatorFormatConfig>;kotlin.Function2<dev.voir.calculator.engine.CalculatorError,dev.voir.calculator.engine.format.CalculatorFormatConfig,kotlin.String>){}[0]

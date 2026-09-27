@@ -1,6 +1,7 @@
 package dev.voir.calculator.engine
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
@@ -18,7 +19,7 @@ class CalculatorStressTest {
                 2 -> CalculatorOperation.Multiply
                 else -> CalculatorOperation.Divide
             }
-            assertTrue(calculator.inputOperation(op))
+            assertAccepted(calculator.inputOperation(op))
         }
 
         // Operator replacement should mutate the final token instead of appending a long operator chain.
@@ -33,10 +34,10 @@ class CalculatorStressTest {
         repeat(250) {
             calculator.input("123.4+56.7*-8/")
             repeat(calculator.formula.value.length) {
-                assertTrue(calculator.deleteLast())
+                assertAccepted(calculator.deleteLast())
             }
             calculator.assertFormula("")
-            calculator.assertSuccess("0")
+            calculator.assertEmpty()
         }
     }
 
@@ -97,7 +98,12 @@ class CalculatorStressTest {
         val invalid = "$valid+x"
 
         calculator.setFormula("2+2")
-        assertFalse(calculator.trySetFormula(invalid))
+        val update = calculator.trySetFormula(invalid)
+
+        assertEquals(
+            FormulaUpdate.Invalid(FormulaError(FormulaErrorKind.InvalidCharacter, invalid.lastIndex, "x")),
+            update,
+        )
 
         // Failed bulk parsing must not partially replace the previous known-good expression.
         calculator.assertFormula("2+2")

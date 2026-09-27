@@ -1,6 +1,7 @@
 package dev.voir.calculator.engine
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
 class CalculatorEvaluationTest {
@@ -34,7 +35,7 @@ class CalculatorEvaluationTest {
         val calculator = Calculator()
 
         calculator.input("-")
-        calculator.assertSuccess("0")
+        calculator.assertEmpty()
 
         calculator.clear()
         calculator.input("1+")
@@ -42,6 +43,19 @@ class CalculatorEvaluationTest {
 
         calculator.input("2*")
         calculator.assertSuccess("3")
+    }
+
+    @Test
+    fun `result outside the decimal range produces arithmetic failure instead of throwing`() {
+        val calculator = Calculator()
+        // Five 38-digit factors exceed the Decimal exponent range of -128..127.
+        val formula = List(5) { "9".repeat(38) }.joinToString("*")
+
+        calculator.setFormula(formula)
+
+        calculator.assertError(CalculatorError.ArithmeticFailure(CalculatorOperation.Multiply))
+        assertIs<CalculatorResult.Error>(calculator.evaluate())
+        calculator.assertFormula(formula)
     }
 
     @Test
@@ -60,7 +74,7 @@ class CalculatorEvaluationTest {
     }
 
     @Test
-    fun `successful evaluate replaces formula with input compatible result`() {
+    fun `successful evaluate shows the result rounded to input precision and keeps it exact`() {
         val calculator = Calculator(CalculatorConfig(inputMaxDecimals = 2, divisionScale = 8))
 
         calculator.setFormula("1/3")
@@ -68,7 +82,45 @@ class CalculatorEvaluationTest {
 
         assertIs<CalculatorResult.Success>(evaluated)
         calculator.assertFormula("0.33")
-        calculator.assertSuccess("0.33")
+        calculator.assertSuccess("0.33333333")
+    }
+
+    @Test
+    fun `evaluate returns the value the live result already showed`() {
+        val calculator = Calculator()
+
+        calculator.input("1/3")
+        val live = calculator.result.value
+
+        assertEquals(live, calculator.evaluate())
+        assertEquals(live, calculator.result.value)
+    }
+
+    @Test
+    fun `evaluated result keeps full precision for the next calculation`() {
+        val calculator = Calculator()
+
+        calculator.input("10/3")
+        calculator.evaluate()
+        calculator.input("*3")
+        calculator.evaluate()
+
+        calculator.assertFormula("10")
+        calculator.assertSuccess("9.999999999999")
+    }
+
+    @Test
+    fun `evaluate without a complete number leaves the formula unchanged`() {
+        for (formula in listOf("", "-")) {
+            val calculator = Calculator()
+            calculator.input(formula)
+
+            val evaluated = calculator.evaluate()
+
+            assertEquals(CalculatorResult.Empty, evaluated)
+            calculator.assertFormula(formula)
+            calculator.assertEmpty()
+        }
     }
 
     @Test

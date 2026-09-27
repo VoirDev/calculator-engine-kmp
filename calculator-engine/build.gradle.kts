@@ -1,58 +1,52 @@
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
+
 plugins {
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.kotlinMultiplatform)
-    id("com.vanniktech.maven.publish") version "0.36.0"
+    alias(libs.plugins.mavenPublish)
+    alias(libs.plugins.dokka)
 }
 
 kotlin {
+    explicitApi()
     jvmToolchain(21)
+
+    // Public API dumps live in calculator-engine/api. Run updateKotlinAbi after an intended API change.
+    @OptIn(ExperimentalAbiValidation::class)
+    abiValidation()
 
     jvm()
     android {
         namespace = "dev.voir.calculator.engine"
         compileSdk = 37
         minSdk = 23
+        // Runs commonTest on the JVM against the Android variant.
+        withHostTest {}
     }
-    iosX64()
     iosArm64()
-    macosArm64()
     iosSimulatorArm64()
+    macosArm64()
 
     sourceSets {
-        val commonMain = getByName("commonMain")
-        val commonTest = getByName("commonTest")
-        val jvmMain = getByName("jvmMain")
-        val androidMain = getByName("androidMain")
-        val iosX64Main = getByName("iosX64Main")
-        val iosArm64Main = getByName("iosArm64Main")
-        val iosSimulatorArm64Main = getByName("iosSimulatorArm64Main")
-        val macosArm64Main = getByName("macosArm64Main")
-
-        val jvmAndroidMain = create("jvmAndroidMain") {
-            dependsOn(commonMain)
-        }
-        val appleMain = findByName("appleMain") ?: create("appleMain") {
-            dependsOn(commonMain)
-        }
-
-        jvmMain.dependsOn(jvmAndroidMain)
-        androidMain.dependsOn(jvmAndroidMain)
-        iosX64Main.dependsOn(appleMain)
-        iosArm64Main.dependsOn(appleMain)
-        iosSimulatorArm64Main.dependsOn(appleMain)
-        macosArm64Main.dependsOn(appleMain)
-
         commonMain.dependencies {
             api(libs.voir.decimal)
             api(libs.kotlinx.coroutines)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
-            implementation(libs.kotlinx.coroutines)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }
 
+
+dokka {
+    moduleName.set("Calculator Engine")
+    dokkaSourceSets.configureEach {
+        // Module and package descriptions shown on the generated API reference pages.
+        includes.from("Module.md")
+    }
+}
 
 val isLocalPublish = gradle.startParameter.taskNames.any {
     it.contains("publishToMavenLocal", ignoreCase = true)

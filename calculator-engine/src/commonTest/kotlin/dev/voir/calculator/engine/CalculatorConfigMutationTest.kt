@@ -53,26 +53,49 @@ class CalculatorConfigMutationTest {
         val calculator = Calculator(CalculatorConfig(inputMaxDecimals = 2))
 
         calculator.input("1.23")
-        assertFalse(calculator.inputDigit('4'))
+        assertRejected(calculator.inputDigit('4'))
 
         calculator.updateConfig { it.copy(inputMaxDecimals = 4) }
 
-        assertTrue(calculator.inputDigit('4'))
-        assertTrue(calculator.inputDigit('5'))
-        assertFalse(calculator.inputDigit('6'))
+        assertAccepted(calculator.inputDigit('4'))
+        assertAccepted(calculator.inputDigit('5'))
+        assertRejected(calculator.inputDigit('6'))
         calculator.assertFormula("1.2345")
     }
 
     @Test
-    fun `decreasing input precision does not rewrite existing formula but affects future input`() {
+    fun `decreasing input precision rounds numbers already in the formula`() {
         val calculator = Calculator(CalculatorConfig(inputMaxDecimals = 4))
 
-        calculator.input("1.234")
+        calculator.input("1.2345+2.5")
         calculator.updateConfig { it.copy(inputMaxDecimals = 2) }
 
-        calculator.assertFormula("1.234")
-        calculator.assertSuccess("1.234")
-        assertFalse(calculator.inputDigit('5'))
+        calculator.assertFormula("1.23+2.5")
+        calculator.assertSuccess("3.73")
+        assertAccepted(calculator.inputDigit('5'))
+        assertRejected(calculator.inputDigit('5'))
+    }
+
+    @Test
+    fun `zero input precision drops a trailing decimal separator`() {
+        val calculator = Calculator()
+
+        calculator.input("3.")
+        calculator.updateConfig { it.copy(inputMaxDecimals = 0) }
+
+        calculator.assertFormula("3")
+    }
+
+    @Test
+    fun `precision change re-rounds an evaluated result from its exact value`() {
+        val calculator = Calculator(CalculatorConfig(inputMaxDecimals = 1))
+        calculator.setFormula("2/3")
+        calculator.evaluate()
+        calculator.assertFormula("0.7")
+
+        calculator.updateConfig { it.copy(inputMaxDecimals = 3) }
+
+        calculator.assertFormula("0.667")
     }
 
     @Test
@@ -83,7 +106,7 @@ class CalculatorConfigMutationTest {
         calculator.updateConfig { it.copy(inputMaxDecimals = 0, precedence = CalculatorPrecedence.Standard) }
 
         calculator.assertFormula("-")
-        calculator.assertSuccess("0")
-        assertFalse(calculator.inputDecimalSeparator())
+        calculator.assertEmpty()
+        assertRejected(calculator.inputDecimalSeparator())
     }
 }

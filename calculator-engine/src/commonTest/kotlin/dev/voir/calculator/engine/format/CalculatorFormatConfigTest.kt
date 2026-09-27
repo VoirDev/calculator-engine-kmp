@@ -1,6 +1,5 @@
 package dev.voir.calculator.engine.format
 
-import dev.voir.calculator.engine.CalculatorOperationSymbol
 import dev.voir.decimal.Rounding
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -14,22 +13,24 @@ class CalculatorFormatConfigTest {
         assertEquals('.', config.decimalSeparator)
         assertEquals(' ', config.groupingSeparator)
         assertEquals(0, config.minimumFractionDigits)
-        assertEquals(2, config.maxDecimals)
+        assertEquals(2, config.maximumFractionDigits)
         assertEquals(Rounding.HALF_UP, config.rounding)
         assertEquals("Error", config.errorLabel)
-        assertEquals(CalculatorOperationSymbol(), config.operationSymbols)
+        assertEquals(CalculatorOperationSymbols(), config.operationSymbols)
     }
 
     @Test
     fun `format config allows documented boundary values`() {
-        CalculatorFormatConfig(maxDecimals = 0)
-        CalculatorFormatConfig(maxDecimals = 9)
-        CalculatorFormatConfig(minimumFractionDigits = 0, maxDecimals = 0)
-        CalculatorFormatConfig(minimumFractionDigits = 9, maxDecimals = 9)
+        CalculatorFormatConfig(maximumFractionDigits = 0)
+        CalculatorFormatConfig(maximumFractionDigits = 32767)
+        CalculatorFormatConfig(minimumFractionDigits = 0, maximumFractionDigits = 0)
+        CalculatorFormatConfig(minimumFractionDigits = 32767, maximumFractionDigits = 32767)
         CalculatorFormatConfig(groupingSeparator = '_')
+        CalculatorFormatConfig(groupingSeparator = null)
+        CalculatorFormatConfig(negativeSign = '−', operationSymbols = CalculatorOperationSymbols(subtract = '−'))
         CalculatorFormatConfig(decimalSeparator = ',', groupingSeparator = '.')
         CalculatorFormatConfig(
-            operationSymbols = CalculatorOperationSymbol(
+            operationSymbols = CalculatorOperationSymbols(
                 add = 'p',
                 subtract = 'm',
                 multiply = 'x',
@@ -56,21 +57,40 @@ class CalculatorFormatConfigTest {
     }
 
     @Test
-    fun `format config rejects max decimals outside supported range`() {
-        assertFailsWith<IllegalArgumentException> { CalculatorFormatConfig(maxDecimals = -1) }
-        assertFailsWith<IllegalArgumentException> { CalculatorFormatConfig(maxDecimals = 10) }
+    fun `format config rejects maximum fraction digits outside supported range`() {
+        assertFailsWith<IllegalArgumentException> { CalculatorFormatConfig(maximumFractionDigits = -1) }
+        assertFailsWith<IllegalArgumentException> { CalculatorFormatConfig(maximumFractionDigits = 32768) }
     }
 
     @Test
     fun `format config rejects minimum fraction digits outside supported range`() {
         assertFailsWith<IllegalArgumentException> { CalculatorFormatConfig(minimumFractionDigits = -1) }
-        assertFailsWith<IllegalArgumentException> { CalculatorFormatConfig(minimumFractionDigits = 10, maxDecimals = 10) }
+        assertFailsWith<IllegalArgumentException> {
+            CalculatorFormatConfig(minimumFractionDigits = 32768, maximumFractionDigits = 32767)
+        }
+    }
+
+    @Test
+    fun `format config rejects digits as separators signs or symbols`() {
+        assertFailsWith<IllegalArgumentException> { CalculatorFormatConfig(groupingSeparator = '1') }
+        assertFailsWith<IllegalArgumentException> { CalculatorFormatConfig(decimalSeparator = '5') }
+        assertFailsWith<IllegalArgumentException> { CalculatorFormatConfig(negativeSign = '0') }
+        assertFailsWith<IllegalArgumentException> {
+            CalculatorFormatConfig(operationSymbols = CalculatorOperationSymbols(add = '٣'))
+        }
+    }
+
+    @Test
+    fun `format config allows the negative sign to equal only the subtract symbol`() {
+        assertFailsWith<IllegalArgumentException> { CalculatorFormatConfig(negativeSign = '×') }
+        assertFailsWith<IllegalArgumentException> { CalculatorFormatConfig(negativeSign = '.') }
+        assertFailsWith<IllegalArgumentException> { CalculatorFormatConfig(negativeSign = ' ') }
     }
 
     @Test
     fun `format config rejects minimum fraction digits greater than max decimals`() {
         assertFailsWith<IllegalArgumentException> {
-            CalculatorFormatConfig(minimumFractionDigits = 3, maxDecimals = 2)
+            CalculatorFormatConfig(minimumFractionDigits = 3, maximumFractionDigits = 2)
         }
     }
 
@@ -78,7 +98,7 @@ class CalculatorFormatConfigTest {
     fun `format config rejects duplicate operation symbols`() {
         assertFailsWith<IllegalArgumentException> {
             CalculatorFormatConfig(
-                operationSymbols = CalculatorOperationSymbol(
+                operationSymbols = CalculatorOperationSymbols(
                     add = '+',
                     subtract = '+',
                     multiply = '*',
@@ -92,7 +112,7 @@ class CalculatorFormatConfigTest {
     fun `format config rejects whitespace operation symbols`() {
         assertFailsWith<IllegalArgumentException> {
             CalculatorFormatConfig(
-                operationSymbols = CalculatorOperationSymbol(multiply = ' ')
+                operationSymbols = CalculatorOperationSymbols(multiply = ' ')
             )
         }
     }

@@ -3,6 +3,7 @@ package dev.voir.calculator.engine
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
 
 class CalculatorOperationTest {
     @Test
@@ -15,8 +16,14 @@ class CalculatorOperationTest {
 
     @Test
     fun `unsupported operation symbols throw`() {
-        assertFailsWith<IllegalStateException> { CalculatorOperation.fromSymbol('%') }
-        assertFailsWith<IllegalStateException> { CalculatorOperation.fromSymbol('×') }
-        assertFailsWith<IllegalStateException> { CalculatorOperation.fromSymbol(' ') }
+        assertFailsWith<IllegalArgumentException> { CalculatorOperation.fromSymbol('%') }
+        assertFailsWith<IllegalArgumentException> { CalculatorOperation.fromSymbol('×') }
+        assertFailsWith<IllegalArgumentException> { CalculatorOperation.fromSymbol(' ') }
+    }
+
+    @Test
+    fun `from symbol or null returns null for unsupported symbols`() {
+        assertEquals(CalculatorOperation.Divide, CalculatorOperation.fromSymbolOrNull('/'))
+        assertNull(CalculatorOperation.fromSymbolOrNull('÷'))
     }
 }
