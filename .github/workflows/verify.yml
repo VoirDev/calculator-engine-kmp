@@ -1,25 +1,32 @@
-name: Verify the library
+name: Verify
 
 on:
   pull_request:
     branches:
       - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: verify-${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: Run tests
-    runs-on: macos-latest
+  verify:
+    name: Build and check whole repository
     if: ${{ !contains(github.event.pull_request.body || '', '[skip verify]') }}
+    # iOS and macOS targets compile and run their tests only on a macOS host.
+    runs-on: macos-latest
+    timeout-minutes: 45
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v6
 
       - name: Set up JDK 21
@@ -27,16 +34,17 @@ jobs:
         with:
           distribution: temurin
           java-version: "21"
-          cache: gradle
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v5
 
-      - name: Build (all modules) with tests
-        run: ./gradlew --no-daemon clean build
+      # Compiles every target, runs JVM, Android host, iOS simulator, and macOS tests, and checks the
+      # public API dump.
+      - name: Verify whole repository
+        run: ./gradlew check --no-daemon
 
-      - name: Publish test reports (always)
-        if: always()
+      - name: Upload test reports
+        if: failure()
         uses: actions/upload-artifact@v6
         with:
           name: test-reports
@@ -44,8 +52,4 @@ jobs:
             **/build/test-results/**
             **/build/reports/tests/**
           if-no-files-found: ignore
-
-      - name: Publish build scans / reports (optional)
-        if: failure()
-        run: |
-          echo "Gradle build failed. See artifacts for reports."
+          retention-days: 7

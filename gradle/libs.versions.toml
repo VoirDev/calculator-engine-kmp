@@ -1,12 +1,17 @@
 [versions]
-agp = "9.2.1"
-kotlin = "2.4.0" # https://kotlinlang.org/docs/releases.html
+agp = "9.4.1"
+kotlin = "2.4.20" # https://kotlinlang.org/docs/releases.html
 kotlin-coroutines = "1.11.0" # https://github.com/Kotlin/kotlinx.coroutines
+maven-publish = "0.36.0" # https://github.com/vanniktech/gradle-maven-publish-plugin
+dokka = "2.2.0" # https://github.com/Kotlin/dokka
 
 [libraries]
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
-voir-decimal = { module = "dev.voir:decimal", version = "1.0.2" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
+voir-decimal = { module = "dev.voir:decimal", version = "1.0.3" }
 
 [plugins]
 androidMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }

@@ -10,7 +10,7 @@ class CalculatorDecimalSeparatorInputTest {
     fun `decimal separator starts zero prefixed decimal`() {
         val calculator = Calculator()
 
-        assertTrue(calculator.inputDecimalSeparator())
+        assertAccepted(calculator.inputDecimalSeparator())
 
         calculator.assertFormula("0.")
         calculator.assertSuccess("0")
@@ -51,10 +51,22 @@ class CalculatorDecimalSeparatorInputTest {
     fun `decimal separator is rejected when input max decimals is zero`() {
         val calculator = Calculator(CalculatorConfig(inputMaxDecimals = 0))
 
-        assertFalse(calculator.inputDecimalSeparator())
+        assertRejected(calculator.inputDecimalSeparator())
         assertEquals(listOf(true, false), calculator.input("1."))
 
         calculator.assertFormula("1")
         calculator.assertSuccess("1")
+    }
+
+    @Test
+    fun `decimal separator after evaluate starts a new number`() {
+        val calculator = Calculator()
+        calculator.input("2+3")
+        calculator.evaluate()
+
+        assertAccepted(calculator.inputDecimalSeparator())
+
+        calculator.assertFormula("0.")
+        calculator.assertSuccess("0")
     }
 }

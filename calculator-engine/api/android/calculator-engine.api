@@ -1,0 +1,366 @@
+public final class dev/voir/calculator/engine/Calculator : dev/voir/calculator/engine/CalculatorApi {
+	public fun <init> ()V
+	public fun <init> (Ldev/voir/calculator/engine/CalculatorConfig;Ldev/voir/calculator/engine/CalculatorLogger;)V
+	public synthetic fun <init> (Ldev/voir/calculator/engine/CalculatorConfig;Ldev/voir/calculator/engine/CalculatorLogger;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun clear ()Ldev/voir/calculator/engine/InputResult;
+	public fun deleteLast ()Ldev/voir/calculator/engine/InputResult;
+	public fun evaluate ()Ldev/voir/calculator/engine/CalculatorResult;
+	public fun getConfig ()Lkotlinx/coroutines/flow/StateFlow;
+	public fun getFormula ()Lkotlinx/coroutines/flow/StateFlow;
+	public fun getResult ()Lkotlinx/coroutines/flow/StateFlow;
+	public fun getState ()Lkotlinx/coroutines/flow/StateFlow;
+	public fun inputDecimalSeparator ()Ldev/voir/calculator/engine/InputResult;
+	public fun inputDigit (C)Ldev/voir/calculator/engine/InputResult;
+	public fun inputOperation (Ldev/voir/calculator/engine/CalculatorOperation;)Ldev/voir/calculator/engine/InputResult;
+	public fun setConfig (Ldev/voir/calculator/engine/CalculatorConfig;)V
+	public fun setFormula (Ljava/lang/String;)V
+	public fun trySetFormula (Ljava/lang/String;)Ldev/voir/calculator/engine/FormulaUpdate;
+	public fun updateConfig (Lkotlin/jvm/functions/Function1;)V
+}
+
+public abstract interface class dev/voir/calculator/engine/CalculatorApi {
+	public abstract fun clear ()Ldev/voir/calculator/engine/InputResult;
+	public abstract fun deleteLast ()Ldev/voir/calculator/engine/InputResult;
+	public abstract fun evaluate ()Ldev/voir/calculator/engine/CalculatorResult;
+	public abstract fun getConfig ()Lkotlinx/coroutines/flow/StateFlow;
+	public abstract fun getFormula ()Lkotlinx/coroutines/flow/StateFlow;
+	public abstract fun getResult ()Lkotlinx/coroutines/flow/StateFlow;
+	public abstract fun getState ()Lkotlinx/coroutines/flow/StateFlow;
+	public abstract fun inputDecimalSeparator ()Ldev/voir/calculator/engine/InputResult;
+	public abstract fun inputDigit (C)Ldev/voir/calculator/engine/InputResult;
+	public abstract fun inputOperation (Ldev/voir/calculator/engine/CalculatorOperation;)Ldev/voir/calculator/engine/InputResult;
+	public abstract fun setConfig (Ldev/voir/calculator/engine/CalculatorConfig;)V
+	public abstract fun setFormula (Ljava/lang/String;)V
+	public abstract fun trySetFormula (Ljava/lang/String;)Ldev/voir/calculator/engine/FormulaUpdate;
+	public abstract fun updateConfig (Lkotlin/jvm/functions/Function1;)V
+}
+
+public final class dev/voir/calculator/engine/CalculatorConfig {
+	public fun <init> ()V
+	public fun <init> (IIILdev/voir/calculator/engine/CalculatorPrecedence;Ldev/voir/decimal/Rounding;)V
+	public synthetic fun <init> (IIILdev/voir/calculator/engine/CalculatorPrecedence;Ldev/voir/decimal/Rounding;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()Ldev/voir/calculator/engine/CalculatorPrecedence;
+	public final fun component5 ()Ldev/voir/decimal/Rounding;
+	public final fun copy (IIILdev/voir/calculator/engine/CalculatorPrecedence;Ldev/voir/decimal/Rounding;)Ldev/voir/calculator/engine/CalculatorConfig;
+	public static synthetic fun copy$default (Ldev/voir/calculator/engine/CalculatorConfig;IIILdev/voir/calculator/engine/CalculatorPrecedence;Ldev/voir/decimal/Rounding;ILjava/lang/Object;)Ldev/voir/calculator/engine/CalculatorConfig;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDivisionScale ()I
+	public final fun getInputMaxDecimals ()I
+	public final fun getInputMaxDigits ()I
+	public final fun getPrecedence ()Ldev/voir/calculator/engine/CalculatorPrecedence;
+	public final fun getRounding ()Ldev/voir/decimal/Rounding;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class dev/voir/calculator/engine/CalculatorError {
+}
+
+public final class dev/voir/calculator/engine/CalculatorError$ArithmeticFailure : dev/voir/calculator/engine/CalculatorError {
+	public fun <init> (Ldev/voir/calculator/engine/CalculatorOperation;)V
+	public final fun component1 ()Ldev/voir/calculator/engine/CalculatorOperation;
+	public final fun copy (Ldev/voir/calculator/engine/CalculatorOperation;)Ldev/voir/calculator/engine/CalculatorError$ArithmeticFailure;
+	public static synthetic fun copy$default (Ldev/voir/calculator/engine/CalculatorError$ArithmeticFailure;Ldev/voir/calculator/engine/CalculatorOperation;ILjava/lang/Object;)Ldev/voir/calculator/engine/CalculatorError$ArithmeticFailure;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getOperation ()Ldev/voir/calculator/engine/CalculatorOperation;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/voir/calculator/engine/CalculatorError$DivisionByZero : dev/voir/calculator/engine/CalculatorError {
+	public static final field INSTANCE Ldev/voir/calculator/engine/CalculatorError$DivisionByZero;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/voir/calculator/engine/CalculatorError$InvalidNumber : dev/voir/calculator/engine/CalculatorError {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Ldev/voir/calculator/engine/CalculatorError$InvalidNumber;
+	public static synthetic fun copy$default (Ldev/voir/calculator/engine/CalculatorError$InvalidNumber;Ljava/lang/String;ILjava/lang/Object;)Ldev/voir/calculator/engine/CalculatorError$InvalidNumber;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getText ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/voir/calculator/engine/CalculatorLogLevel : java/lang/Enum {
+	public static final field Debug Ldev/voir/calculator/engine/CalculatorLogLevel;
+	public static final field Error Ldev/voir/calculator/engine/CalculatorLogLevel;
+	public static final field Info Ldev/voir/calculator/engine/CalculatorLogLevel;
+	public static final field Warning Ldev/voir/calculator/engine/CalculatorLogLevel;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/voir/calculator/engine/CalculatorLogLevel;
+	public static fun values ()[Ldev/voir/calculator/engine/CalculatorLogLevel;
+}
+
+public abstract interface class dev/voir/calculator/engine/CalculatorLogger {
+	public static final field Companion Ldev/voir/calculator/engine/CalculatorLogger$Companion;
+	public abstract fun log (Ldev/voir/calculator/engine/CalculatorLogLevel;Lkotlin/jvm/functions/Function0;)V
+}
+
+public final class dev/voir/calculator/engine/CalculatorLogger$Companion {
+	public final fun getNone ()Ldev/voir/calculator/engine/CalculatorLogger;
+}
+
+public final class dev/voir/calculator/engine/CalculatorOperation : java/lang/Enum {
+	public static final field Add Ldev/voir/calculator/engine/CalculatorOperation;
+	public static final field Companion Ldev/voir/calculator/engine/CalculatorOperation$Companion;
+	public static final field Divide Ldev/voir/calculator/engine/CalculatorOperation;
+	public static final field Multiply Ldev/voir/calculator/engine/CalculatorOperation;
+	public static final field Subtract Ldev/voir/calculator/engine/CalculatorOperation;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getSymbol ()C
+	public static fun valueOf (Ljava/lang/String;)Ldev/voir/calculator/engine/CalculatorOperation;
+	public static fun values ()[Ldev/voir/calculator/engine/CalculatorOperation;
+}
+
+public final class dev/voir/calculator/engine/CalculatorOperation$Companion {
+	public final fun fromSymbol (C)Ldev/voir/calculator/engine/CalculatorOperation;
+	public final fun fromSymbolOrNull (C)Ldev/voir/calculator/engine/CalculatorOperation;
+}
+
+public final class dev/voir/calculator/engine/CalculatorPrecedence : java/lang/Enum {
+	public static final field Chain Ldev/voir/calculator/engine/CalculatorPrecedence;
+	public static final field Standard Ldev/voir/calculator/engine/CalculatorPrecedence;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/voir/calculator/engine/CalculatorPrecedence;
+	public static fun values ()[Ldev/voir/calculator/engine/CalculatorPrecedence;
+}
+
+public abstract interface class dev/voir/calculator/engine/CalculatorResult {
+}
+
+public final class dev/voir/calculator/engine/CalculatorResult$Empty : dev/voir/calculator/engine/CalculatorResult {
+	public static final field INSTANCE Ldev/voir/calculator/engine/CalculatorResult$Empty;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/voir/calculator/engine/CalculatorResult$Error : dev/voir/calculator/engine/CalculatorResult {
+	public fun <init> (Ldev/voir/calculator/engine/CalculatorError;)V
+	public final fun component1 ()Ldev/voir/calculator/engine/CalculatorError;
+	public final fun copy (Ldev/voir/calculator/engine/CalculatorError;)Ldev/voir/calculator/engine/CalculatorResult$Error;
+	public static synthetic fun copy$default (Ldev/voir/calculator/engine/CalculatorResult$Error;Ldev/voir/calculator/engine/CalculatorError;ILjava/lang/Object;)Ldev/voir/calculator/engine/CalculatorResult$Error;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getError ()Ldev/voir/calculator/engine/CalculatorError;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/voir/calculator/engine/CalculatorResult$Success : dev/voir/calculator/engine/CalculatorResult {
+	public fun <init> (Ldev/voir/decimal/Decimal;)V
+	public final fun component1 ()Ldev/voir/decimal/Decimal;
+	public final fun copy (Ldev/voir/decimal/Decimal;)Ldev/voir/calculator/engine/CalculatorResult$Success;
+	public static synthetic fun copy$default (Ldev/voir/calculator/engine/CalculatorResult$Success;Ldev/voir/decimal/Decimal;ILjava/lang/Object;)Ldev/voir/calculator/engine/CalculatorResult$Success;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getValue ()Ldev/voir/decimal/Decimal;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/voir/calculator/engine/CalculatorState {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ldev/voir/calculator/engine/CalculatorResult;Ldev/voir/calculator/engine/CalculatorConfig;Z)V
+	public synthetic fun <init> (Ljava/lang/String;Ldev/voir/calculator/engine/CalculatorResult;Ldev/voir/calculator/engine/CalculatorConfig;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ldev/voir/calculator/engine/CalculatorResult;
+	public final fun component3 ()Ldev/voir/calculator/engine/CalculatorConfig;
+	public final fun component4 ()Z
+	public final fun copy (Ljava/lang/String;Ldev/voir/calculator/engine/CalculatorResult;Ldev/voir/calculator/engine/CalculatorConfig;Z)Ldev/voir/calculator/engine/CalculatorState;
+	public static synthetic fun copy$default (Ldev/voir/calculator/engine/CalculatorState;Ljava/lang/String;Ldev/voir/calculator/engine/CalculatorResult;Ldev/voir/calculator/engine/CalculatorConfig;ZILjava/lang/Object;)Ldev/voir/calculator/engine/CalculatorState;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConfig ()Ldev/voir/calculator/engine/CalculatorConfig;
+	public final fun getFormula ()Ljava/lang/String;
+	public final fun getResult ()Ldev/voir/calculator/engine/CalculatorResult;
+	public fun hashCode ()I
+	public final fun isShowingResult ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/voir/calculator/engine/FormulaError {
+	public fun <init> (Ldev/voir/calculator/engine/FormulaErrorKind;ILjava/lang/String;)V
+	public final fun component1 ()Ldev/voir/calculator/engine/FormulaErrorKind;
+	public final fun component2 ()I
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Ldev/voir/calculator/engine/FormulaErrorKind;ILjava/lang/String;)Ldev/voir/calculator/engine/FormulaError;
+	public static synthetic fun copy$default (Ldev/voir/calculator/engine/FormulaError;Ldev/voir/calculator/engine/FormulaErrorKind;ILjava/lang/String;ILjava/lang/Object;)Ldev/voir/calculator/engine/FormulaError;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getKind ()Ldev/voir/calculator/engine/FormulaErrorKind;
+	public final fun getMessage ()Ljava/lang/String;
+	public final fun getPosition ()I
+	public final fun getText ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/voir/calculator/engine/FormulaErrorKind : java/lang/Enum {
+	public static final field IncompleteNumber Ldev/voir/calculator/engine/FormulaErrorKind;
+	public static final field InvalidCharacter Ldev/voir/calculator/engine/FormulaErrorKind;
+	public static final field TooManyDecimals Ldev/voir/calculator/engine/FormulaErrorKind;
+	public static final field UnexpectedNumber Ldev/voir/calculator/engine/FormulaErrorKind;
+	public static final field UnexpectedOperation Ldev/voir/calculator/engine/FormulaErrorKind;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/voir/calculator/engine/FormulaErrorKind;
+	public static fun values ()[Ldev/voir/calculator/engine/FormulaErrorKind;
+}
+
+public final class dev/voir/calculator/engine/FormulaSyntaxException : java/lang/IllegalArgumentException {
+	public fun <init> (Ldev/voir/calculator/engine/FormulaError;)V
+	public final fun getError ()Ldev/voir/calculator/engine/FormulaError;
+}
+
+public abstract interface class dev/voir/calculator/engine/FormulaUpdate {
+}
+
+public final class dev/voir/calculator/engine/FormulaUpdate$Changed : dev/voir/calculator/engine/FormulaUpdate {
+	public static final field INSTANCE Ldev/voir/calculator/engine/FormulaUpdate$Changed;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/voir/calculator/engine/FormulaUpdate$Invalid : dev/voir/calculator/engine/FormulaUpdate {
+	public fun <init> (Ldev/voir/calculator/engine/FormulaError;)V
+	public final fun component1 ()Ldev/voir/calculator/engine/FormulaError;
+	public final fun copy (Ldev/voir/calculator/engine/FormulaError;)Ldev/voir/calculator/engine/FormulaUpdate$Invalid;
+	public static synthetic fun copy$default (Ldev/voir/calculator/engine/FormulaUpdate$Invalid;Ldev/voir/calculator/engine/FormulaError;ILjava/lang/Object;)Ldev/voir/calculator/engine/FormulaUpdate$Invalid;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getError ()Ldev/voir/calculator/engine/FormulaError;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/voir/calculator/engine/FormulaUpdate$Unchanged : dev/voir/calculator/engine/FormulaUpdate {
+	public static final field INSTANCE Ldev/voir/calculator/engine/FormulaUpdate$Unchanged;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/voir/calculator/engine/InputRejection : java/lang/Enum {
+	public static final field DecimalLimitReached Ldev/voir/calculator/engine/InputRejection;
+	public static final field DecimalsDisabled Ldev/voir/calculator/engine/InputRejection;
+	public static final field DigitLimitReached Ldev/voir/calculator/engine/InputRejection;
+	public static final field DuplicateDecimalSeparator Ldev/voir/calculator/engine/InputRejection;
+	public static final field MissingOperand Ldev/voir/calculator/engine/InputRejection;
+	public static final field NoChange Ldev/voir/calculator/engine/InputRejection;
+	public static final field NothingToRemove Ldev/voir/calculator/engine/InputRejection;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/voir/calculator/engine/InputRejection;
+	public static fun values ()[Ldev/voir/calculator/engine/InputRejection;
+}
+
+public abstract interface class dev/voir/calculator/engine/InputResult {
+	public abstract fun isAccepted ()Z
+}
+
+public final class dev/voir/calculator/engine/InputResult$Accepted : dev/voir/calculator/engine/InputResult {
+	public static final field INSTANCE Ldev/voir/calculator/engine/InputResult$Accepted;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun isAccepted ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/voir/calculator/engine/InputResult$Rejected : dev/voir/calculator/engine/InputResult {
+	public fun <init> (Ldev/voir/calculator/engine/InputRejection;)V
+	public final fun component1 ()Ldev/voir/calculator/engine/InputRejection;
+	public final fun copy (Ldev/voir/calculator/engine/InputRejection;)Ldev/voir/calculator/engine/InputResult$Rejected;
+	public static synthetic fun copy$default (Ldev/voir/calculator/engine/InputResult$Rejected;Ldev/voir/calculator/engine/InputRejection;ILjava/lang/Object;)Ldev/voir/calculator/engine/InputResult$Rejected;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getReason ()Ldev/voir/calculator/engine/InputRejection;
+	public fun hashCode ()I
+	public fun isAccepted ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/voir/calculator/engine/format/CalculatorDisplay {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Z)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Z
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Z)Ldev/voir/calculator/engine/format/CalculatorDisplay;
+	public static synthetic fun copy$default (Ldev/voir/calculator/engine/format/CalculatorDisplay;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)Ldev/voir/calculator/engine/format/CalculatorDisplay;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFormula ()Ljava/lang/String;
+	public final fun getResult ()Ljava/lang/String;
+	public fun hashCode ()I
+	public final fun isShowingResult ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/voir/calculator/engine/format/CalculatorDisplayKt {
+	public static final fun formatted (Lkotlinx/coroutines/flow/Flow;Ldev/voir/calculator/engine/format/CalculatorFormatConfig;Lkotlin/jvm/functions/Function1;)Lkotlinx/coroutines/flow/Flow;
+	public static final fun formatted (Lkotlinx/coroutines/flow/Flow;Lkotlinx/coroutines/flow/Flow;Lkotlin/jvm/functions/Function2;)Lkotlinx/coroutines/flow/Flow;
+	public static synthetic fun formatted$default (Lkotlinx/coroutines/flow/Flow;Ldev/voir/calculator/engine/format/CalculatorFormatConfig;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
+	public static synthetic fun formatted$default (Lkotlinx/coroutines/flow/Flow;Lkotlinx/coroutines/flow/Flow;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
+}
+
+public final class dev/voir/calculator/engine/format/CalculatorFormatConfig {
+	public fun <init> ()V
+	public fun <init> (CLjava/lang/Character;CIILdev/voir/decimal/Rounding;Ldev/voir/calculator/engine/format/CalculatorOperationSymbols;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (CLjava/lang/Character;CIILdev/voir/decimal/Rounding;Ldev/voir/calculator/engine/format/CalculatorOperationSymbols;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()C
+	public final fun component2 ()Ljava/lang/Character;
+	public final fun component3 ()C
+	public final fun component4 ()I
+	public final fun component5 ()I
+	public final fun component6 ()Ldev/voir/decimal/Rounding;
+	public final fun component7 ()Ldev/voir/calculator/engine/format/CalculatorOperationSymbols;
+	public final fun component8 ()Ljava/lang/String;
+	public final fun component9 ()Ljava/lang/String;
+	public final fun copy (CLjava/lang/Character;CIILdev/voir/decimal/Rounding;Ldev/voir/calculator/engine/format/CalculatorOperationSymbols;Ljava/lang/String;Ljava/lang/String;)Ldev/voir/calculator/engine/format/CalculatorFormatConfig;
+	public static synthetic fun copy$default (Ldev/voir/calculator/engine/format/CalculatorFormatConfig;CLjava/lang/Character;CIILdev/voir/decimal/Rounding;Ldev/voir/calculator/engine/format/CalculatorOperationSymbols;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/voir/calculator/engine/format/CalculatorFormatConfig;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDecimalSeparator ()C
+	public final fun getEmptyLabel ()Ljava/lang/String;
+	public final fun getErrorLabel ()Ljava/lang/String;
+	public final fun getGroupingSeparator ()Ljava/lang/Character;
+	public final fun getMaximumFractionDigits ()I
+	public final fun getMinimumFractionDigits ()I
+	public final fun getNegativeSign ()C
+	public final fun getOperationSymbols ()Ldev/voir/calculator/engine/format/CalculatorOperationSymbols;
+	public final fun getRounding ()Ldev/voir/decimal/Rounding;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/voir/calculator/engine/format/CalculatorFormatter {
+	public static final field INSTANCE Ldev/voir/calculator/engine/format/CalculatorFormatter;
+	public final fun format (Ldev/voir/calculator/engine/CalculatorState;Ldev/voir/calculator/engine/format/CalculatorFormatConfig;Lkotlin/jvm/functions/Function1;)Ldev/voir/calculator/engine/format/CalculatorDisplay;
+	public static synthetic fun format$default (Ldev/voir/calculator/engine/format/CalculatorFormatter;Ldev/voir/calculator/engine/CalculatorState;Ldev/voir/calculator/engine/format/CalculatorFormatConfig;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Ldev/voir/calculator/engine/format/CalculatorDisplay;
+	public final fun formatFormula (Ljava/lang/String;Ldev/voir/calculator/engine/format/CalculatorFormatConfig;)Ljava/lang/String;
+	public static synthetic fun formatFormula$default (Ldev/voir/calculator/engine/format/CalculatorFormatter;Ljava/lang/String;Ldev/voir/calculator/engine/format/CalculatorFormatConfig;ILjava/lang/Object;)Ljava/lang/String;
+	public final fun formatResult (Ldev/voir/calculator/engine/CalculatorResult;Ldev/voir/calculator/engine/format/CalculatorFormatConfig;Lkotlin/jvm/functions/Function1;)Ljava/lang/String;
+	public static synthetic fun formatResult$default (Ldev/voir/calculator/engine/format/CalculatorFormatter;Ldev/voir/calculator/engine/CalculatorResult;Ldev/voir/calculator/engine/format/CalculatorFormatConfig;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Ljava/lang/String;
+	public final fun normalizeFormula (Ljava/lang/String;Ldev/voir/calculator/engine/format/CalculatorFormatConfig;)Ljava/lang/String;
+	public static synthetic fun normalizeFormula$default (Ldev/voir/calculator/engine/format/CalculatorFormatter;Ljava/lang/String;Ldev/voir/calculator/engine/format/CalculatorFormatConfig;ILjava/lang/Object;)Ljava/lang/String;
+}
+
+public final class dev/voir/calculator/engine/format/CalculatorOperationSymbols {
+	public fun <init> ()V
+	public fun <init> (CCCC)V
+	public synthetic fun <init> (CCCCILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()C
+	public final fun component2 ()C
+	public final fun component3 ()C
+	public final fun component4 ()C
+	public final fun copy (CCCC)Ldev/voir/calculator/engine/format/CalculatorOperationSymbols;
+	public static synthetic fun copy$default (Ldev/voir/calculator/engine/format/CalculatorOperationSymbols;CCCCILjava/lang/Object;)Ldev/voir/calculator/engine/format/CalculatorOperationSymbols;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAdd ()C
+	public final fun getAll ()Ljava/util/List;
+	public final fun getDivide ()C
+	public final fun getMultiply ()C
+	public final fun getSubtract ()C
+	public fun hashCode ()I
+	public final fun symbolFor (Ldev/voir/calculator/engine/CalculatorOperation;)C
+	public fun toString ()Ljava/lang/String;
+}
+

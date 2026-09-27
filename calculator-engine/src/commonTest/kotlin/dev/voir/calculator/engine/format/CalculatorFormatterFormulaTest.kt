@@ -1,6 +1,5 @@
 package dev.voir.calculator.engine.format
 
-import dev.voir.calculator.engine.CalculatorOperationSymbol
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -22,7 +21,7 @@ class CalculatorFormatterFormulaTest {
     @Test
     fun `format formula renders custom operation symbols with spaces`() {
         val config = CalculatorFormatConfig(
-            operationSymbols = CalculatorOperationSymbol(
+            operationSymbols = CalculatorOperationSymbols(
                 add = 'p',
                 subtract = 'm',
                 multiply = 'x',
@@ -42,14 +41,41 @@ class CalculatorFormatterFormulaTest {
     }
 
     @Test
-    fun `format formula applies minimum fraction digits to completed numbers`() {
+    fun `format formula never rounds or pads typed numbers`() {
         val config = CalculatorFormatConfig(
             decimalSeparator = ',',
             minimumFractionDigits = 2,
-            maxDecimals = 4,
+            maximumFractionDigits = 2,
         )
 
-        assertEquals("1,00 + 2,50", CalculatorFormatter.formatFormula("1+2.5", config))
+        assertEquals("1 + 2,5", CalculatorFormatter.formatFormula("1+2.5", config))
+        assertEquals("1,239", CalculatorFormatter.formatFormula("1.239", config))
+    }
+
+    @Test
+    fun `format formula keeps grouping while trailing zeros or separator are typed`() {
+        assertEquals("1 234.5", CalculatorFormatter.formatFormula("1234.5"))
+        assertEquals("1 234.50", CalculatorFormatter.formatFormula("1234.50"))
+        assertEquals("1 234.", CalculatorFormatter.formatFormula("1234."))
+        assertEquals("-1 234.0", CalculatorFormatter.formatFormula("-1234.0"))
+    }
+
+    @Test
+    fun `format formula without grouping separator leaves integers ungrouped`() {
+        val config = CalculatorFormatConfig(groupingSeparator = null)
+
+        assertEquals("1234567 + 8.5", CalculatorFormatter.formatFormula("1234567+8.5", config))
+    }
+
+    @Test
+    fun `format formula renders the configured negative sign`() {
+        val config = CalculatorFormatConfig(
+            negativeSign = '−',
+            operationSymbols = CalculatorOperationSymbols(subtract = '−'),
+        )
+
+        assertEquals("−5 − 3 × −2", CalculatorFormatter.formatFormula("-5-3*-2", config))
+        assertEquals("−", CalculatorFormatter.formatFormula("-", config))
     }
 
     @Test

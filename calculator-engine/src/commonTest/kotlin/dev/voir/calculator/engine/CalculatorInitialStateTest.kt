@@ -8,11 +8,11 @@ import kotlin.test.assertIs
 
 class CalculatorInitialStateTest {
     @Test
-    fun `new calculator publishes empty formula and zero result`() {
+    fun `new calculator publishes empty formula and empty result`() {
         val calculator = Calculator()
 
         calculator.assertFormula("")
-        calculator.assertSuccess("0")
+        calculator.assertEmpty()
         assertEquals(CalculatorConfig(), calculator.config.value)
     }
 
@@ -29,22 +29,22 @@ class CalculatorInitialStateTest {
 
         assertEquals(config, calculator.config.value)
         calculator.assertFormula("")
-        calculator.assertSuccess("0")
+        calculator.assertEmpty()
     }
 
     @Test
-    fun `evaluating empty formula stores zero as continuable formula`() {
+    fun `evaluating empty formula keeps it empty`() {
         val calculator = Calculator()
 
         val evaluated = calculator.evaluate()
 
-        assertIs<CalculatorResult.Success>(evaluated)
-        calculator.assertFormula("0")
-        calculator.assertSuccess("0")
+        assertEquals(CalculatorResult.Empty, evaluated)
+        calculator.assertFormula("")
+        calculator.assertEmpty()
     }
 
     @Test
     fun `clear on empty formula returns false`() {
-        assertFalse(Calculator().clear())
+        assertRejected(Calculator().clear())
     }
 }

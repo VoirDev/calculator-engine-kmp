@@ -7,7 +7,7 @@ import kotlin.test.assertTrue
 class CalculatorDeleteClearTest {
     @Test
     fun `delete last returns false for empty formula`() {
-        assertFalse(Calculator().deleteLast())
+        assertRejected(Calculator().deleteLast())
     }
 
     @Test
@@ -15,13 +15,13 @@ class CalculatorDeleteClearTest {
         val calculator = Calculator()
 
         calculator.input("123")
-        assertTrue(calculator.deleteLast())
+        assertAccepted(calculator.deleteLast())
         calculator.assertFormula("12")
-        assertTrue(calculator.deleteLast())
+        assertAccepted(calculator.deleteLast())
         calculator.assertFormula("1")
-        assertTrue(calculator.deleteLast())
+        assertAccepted(calculator.deleteLast())
         calculator.assertFormula("")
-        assertFalse(calculator.deleteLast())
+        assertRejected(calculator.deleteLast())
     }
 
     @Test
@@ -29,13 +29,13 @@ class CalculatorDeleteClearTest {
         val calculator = Calculator()
 
         calculator.input("-1.2")
-        assertTrue(calculator.deleteLast())
+        assertAccepted(calculator.deleteLast())
         calculator.assertFormula("-1.")
-        assertTrue(calculator.deleteLast())
+        assertAccepted(calculator.deleteLast())
         calculator.assertFormula("-1")
-        assertTrue(calculator.deleteLast())
+        assertAccepted(calculator.deleteLast())
         calculator.assertFormula("-")
-        assertTrue(calculator.deleteLast())
+        assertAccepted(calculator.deleteLast())
         calculator.assertFormula("")
     }
 
@@ -44,7 +44,7 @@ class CalculatorDeleteClearTest {
         val calculator = Calculator()
 
         calculator.input("1+")
-        assertTrue(calculator.deleteLast())
+        assertAccepted(calculator.deleteLast())
 
         calculator.assertFormula("1")
         calculator.assertSuccess("1")
@@ -56,10 +56,10 @@ class CalculatorDeleteClearTest {
 
         calculator.setFormula("1+2")
 
-        assertTrue(calculator.clear())
+        assertAccepted(calculator.clear())
         calculator.assertFormula("")
-        calculator.assertSuccess("0")
-        assertFalse(calculator.clear())
+        calculator.assertEmpty()
+        assertRejected(calculator.clear())
     }
 
     @Test
@@ -69,9 +69,25 @@ class CalculatorDeleteClearTest {
         calculator.setFormula("1/0")
         calculator.assertError(CalculatorError.DivisionByZero)
 
-        assertTrue(calculator.clear())
+        assertAccepted(calculator.clear())
 
         calculator.assertFormula("")
-        calculator.assertSuccess("0")
+        calculator.assertEmpty()
+    }
+
+    @Test
+    fun `delete after evaluate edits the displayed result as typed text`() {
+        val calculator = Calculator()
+        calculator.input("10/3")
+        calculator.evaluate()
+        calculator.assertFormula("3.33")
+
+        assertAccepted(calculator.deleteLast())
+
+        calculator.assertFormula("3.3")
+        calculator.assertSuccess("3.3")
+        // The edited number is ordinary input again, so digits append to it.
+        assertAccepted(calculator.inputDigit('9'))
+        calculator.assertFormula("3.39")
     }
 }

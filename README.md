@@ -1,51 +1,29 @@
 # Calculator Engine KMP
 
 A small Kotlin Multiplatform calculator engine for apps that need reliable calculator-style input,
-expression evaluation, and reactive UI state.
+exact decimal evaluation, and reactive UI state.
 
-The engine keeps the formula valid while the user types, exposes state with `StateFlow`, supports
-configurable precision and rounding, and includes display helpers for localized separators and
-operation symbols.
+The engine keeps the formula valid while the user types, publishes one consistent state snapshot
+after every change, and includes display helpers for localized separators, signs, and operation
+symbols.
 
 ## Features
 
-- Kotlin Multiplatform library for JVM, Android, iOS, and macOS arm64.
-- Reactive `StateFlow` state for configuration, formula, and result.
-- Calculator-style input helpers for digits, decimal separators, operations, delete, clear, and
-  evaluate.
-- Raw formula support using canonical symbols: `+`, `-`, `*`, `/`, and `.`.
-- Configurable input precision, division scale, rounding, and operation precedence.
-- Formatting helpers for grouping separators, decimal separators, operation symbols, fixed fraction
-  digits, and error labels.
+- Kotlin Multiplatform library for JVM, Android, iOS (arm64 devices and arm64 simulators), and
+  macOS arm64.
+- One `StateFlow<CalculatorState>` with the formula, result, and config from the same snapshot.
+- Calculator-style key input that reports why a key was rejected.
+- Exact results: the formula shows a rounded result, but the next operation continues from the exact
+  value.
+- Canonical formula text for storage, paste, and tests, with precise syntax errors.
+- Configurable input precision, digit limit, division scale, rounding, and operation precedence.
+- Formatting for grouping and decimal separators, negative sign, operation symbols, and labels.
+- Optional, privacy-aware logging with no logging dependency.
 - Decimal arithmetic powered by `dev.voir:decimal`.
 
 ## Installation
 
-The package is not published to Maven Central or another public package repository yet. Public
-installation will be available in a future release.
-
-When published, the package coordinates will be:
-
-```kotlin
-dev.voir:calculator-engine:<version>
-```
-
-For now, use a local build from this repository. The default project version is `1.0.0` unless
-`releaseVersion` is provided.
-
-### Future Gradle Kotlin DSL
-
-```kotlin
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation("dev.voir:calculator-engine:1.0.0")
-}
-```
-
-### Future Kotlin Multiplatform
+The library is not published to Maven Central yet. The coordinates will be:
 
 ```kotlin
 kotlin {
@@ -57,15 +35,16 @@ kotlin {
 }
 ```
 
-### Local Development
-
-Publish the library to your local Maven repository:
+Until then, publish it to your local Maven repository and add `mavenLocal()` to your app's
+repositories:
 
 ```bash
 ./gradlew :calculator-engine:publishToMavenLocal
 ```
 
-Then consume it with `mavenLocal()` enabled in your app.
+The version comes from `version` in `gradle.properties`; override it with `-Pversion=x.y.z`.
+
+See [CHANGELOG.md](CHANGELOG.md) for changes and a migration guide from the initial implementation.
 
 ## Quick Start
 
@@ -81,34 +60,116 @@ calculator.inputDigit('2')
 calculator.inputOperation(CalculatorOperation.Add)
 calculator.inputDigit('3')
 
-val result = calculator.evaluate()
-
-when (result) {
+when (val result = calculator.evaluate()) {
+    CalculatorResult.Empty -> println("nothing to evaluate yet")
     is CalculatorResult.Success -> println(result.value.toPlainString()) // 15
     is CalculatorResult.Error -> println(result.error)
 }
 ```
 
-The current state is always available from flows:
+The whole calculator is published as one `CalculatorState` after every change. Collect `state` when
+a screen shows the formula and the result together, so they always come from the same snapshot:
 
 ```kotlin
-val formula = calculator.formula.value
-val result = calculator.result.value
-val config = calculator.config.value
+calculator.state.collect { state ->
+    render(
+        formula = state.formula,
+        result = state.result,
+        isShowingResult = state.isShowingResult, // true right after evaluate()
+    )
+}
 ```
 
-## Formula Input
+`formula`, `result`, and `config` are also available as separate flows. They are updated one after
+the other, so combining them can briefly pair a new formula with the previous result.
 
-For button-driven calculator UIs, prefer the input helpers:
+`Calculator` is not thread-safe; drive it from one thread, typically the UI thread. Every call is
+synchronous, so `state.value` is up to date as soon as a call returns.
+
+### Jetpack Compose
 
 ```kotlin
-calculator.inputDigit('7')
-calculator.inputDecimalSeparator()
-calculator.inputDigit('5')
-calculator.inputOperation(CalculatorOperation.Multiply)
-calculator.inputDigit('2')
-calculator.evaluate()
+class CalculatorViewModel : ViewModel() {
+    private val calculator = Calculator()
+    private val format = CalculatorFormatConfig(decimalSeparator = ',')
+
+    val display: StateFlow<CalculatorDisplay> = calculator.state
+        .formatted(format)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = CalculatorFormatter.format(calculator.state.value, format),
+        )
+
+    fun onDigit(digit: Char) {
+        calculator.inputDigit(digit)
+    }
+
+    fun onOperation(operation: CalculatorOperation) {
+        calculator.inputOperation(operation)
+    }
+
+    fun onEquals() {
+        calculator.evaluate()
+    }
+}
+
+@Composable
+fun CalculatorDisplayText(viewModel: CalculatorViewModel) {
+    val display by viewModel.display.collectAsStateWithLifecycle()
+
+    Column {
+        Text(display.formula, style = MaterialTheme.typography.headlineMedium)
+        // The formula already is the result right after evaluate(), so skip the preview then.
+        if (!display.isShowingResult) Text(display.result)
+    }
+}
 ```
+
+### Swift
+
+The library is consumed from Swift through the Kotlin framework like any KMP module. Kotlin `Char`
+parameters, such as the digit passed to `inputDigit`, appear in Swift as `unichar` (`UInt16`).
+Because calls are synchronous, reading `calculator.state.value` after each call is enough to refresh
+a SwiftUI view without collecting the flow.
+
+## Key Input
+
+Each key press returns an `InputResult`, so a UI can react to rejected keys:
+
+```kotlin
+when (val input = calculator.inputDigit('7')) {
+    InputResult.Accepted -> Unit
+    is InputResult.Rejected -> when (input.reason) {
+        InputRejection.DecimalLimitReached, InputRejection.DigitLimitReached -> vibrate()
+        else -> Unit
+    }
+}
+```
+
+Keys follow common calculator rules:
+
+| Key | Formula before     | Formula after | Notes                                                         |
+|-----|--------------------|---------------|---------------------------------------------------------------|
+| `7` | empty              | `7`           |                                                               |
+| `0` | `0`                | `0`           | Rejected: `NoChange`                                          |
+| `.` | empty              | `0.`          |                                                               |
+| `.` | `1.5`              | `1.5`         | Rejected: `DuplicateDecimalSeparator`                         |
+| `+` | empty              | empty         | Rejected: `MissingOperand`                                    |
+| `-` | empty              | `-`           | Starts a negative number                                      |
+| `*` | `5+`               | `5*`          | Replaces the operation                                        |
+| `-` | `5*`               | `5*-`         | Starts a negative operand after `*` or `/`                    |
+| `+` | `5*-`              | `5+`          | Replaces the sign and the operation before it                 |
+| `+` | `3.`               | `3+`          | Drops the trailing decimal separator                          |
+| `=` | `10/3`             | `3.33`        | Shows the result at `inputMaxDecimals`; keeps `3.333333333333` |
+| `7` | `3.33` after `=`   | `7`           | Starts a new number                                           |
+| `⌫` | `3.33` after `=`   | `3.3`         | Edits the result as typed text                                |
+| `=` | `5/0`              | `5/0`         | Result is `DivisionByZero`; the formula is kept               |
+
+Because the exact value is kept, `10 / 3 = * 3 =` gives `9.999999999999` (shown as `10`) rather than
+`9.99`. Lowering `inputMaxDecimals` rounds numbers already in the formula.
+
+## Formula Text
 
 For text-driven UIs, use canonical formula text:
 
@@ -117,17 +178,24 @@ calculator.setFormula("10.5*2")
 calculator.evaluate()
 ```
 
-If user input may be invalid, use `trySetFormula`:
+`setFormula` throws `FormulaSyntaxException` for text it cannot parse. If the text comes from the
+user, use `trySetFormula` instead:
 
 ```kotlin
-val accepted = calculator.trySetFormula("12/4")
+when (val update = calculator.trySetFormula(text)) {
+    FormulaUpdate.Changed, FormulaUpdate.Unchanged -> Unit
+    is FormulaUpdate.Invalid -> showError(update.error.kind, update.error.position)
+}
 ```
 
 Canonical formula text uses:
 
-- digits `0` through `9`
+- ASCII digits `0` through `9`
 - decimal separator `.`
 - operations `+`, `-`, `*`, `/`
+
+Whitespace is ignored, and error positions refer to the original text. Numbers are stored the way
+typing would produce them, so `007` becomes `7` and `.5` becomes `0.5`.
 
 ## Configuration
 
@@ -142,6 +210,7 @@ import dev.voir.decimal.Rounding
 val calculator = Calculator(
     CalculatorConfig(
         inputMaxDecimals = 4,
+        inputMaxDigits = 12,
         divisionScale = 12,
         precedence = CalculatorPrecedence.Standard,
         rounding = Rounding.HALF_UP,
@@ -153,33 +222,22 @@ You can update configuration later:
 
 ```kotlin
 calculator.updateConfig { current ->
-    current.copy(precedence = CalculatorPrecedence.Chain)
+    current.copy(inputMaxDecimals = currency.decimalDigits)
 }
 ```
 
-### CalculatorConfig
+| Option             | Default                      | Description                                                                                                                     |
+|--------------------|------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| `inputMaxDecimals` | `2`                          | Maximum fractional digits in typed and parsed numbers, and the precision results are shown with in the formula. Must be `0..9`. |
+| `inputMaxDigits`   | `15`                         | Maximum digits in a typed number, counting a leading zero. Must be `1..38` and greater than `inputMaxDecimals`.                 |
+| `divisionScale`    | `12`                         | Maximum fractional digits kept by each division. Must be `0..32767`.                                                            |
+| `precedence`       | `CalculatorPrecedence.Chain` | Evaluation mode for chained operations.                                                                                         |
+| `rounding`         | `Rounding.HALF_UP`           | Rounding mode used for division and for results shown at `inputMaxDecimals`.                                                    |
 
-| Option             | Default                      | Description                                                                        |
-|--------------------|------------------------------|------------------------------------------------------------------------------------|
-| `maxDecimals`      | `2`                          | Compatibility default used by `inputMaxDecimals`.                                  |
-| `inputMaxDecimals` | `maxDecimals`                | Maximum fractional digits accepted from input and parsed formulas. Must be `0..9`. |
-| `divisionScale`    | `inputMaxDecimals + 10`      | Internal decimal scale used for division. Must be `>= 0`.                          |
-| `precedence`       | `CalculatorPrecedence.Chain` | Evaluation mode for chained operations.                                            |
-| `rounding`         | `Rounding.HALF_UP`           | Rounding mode used for division and evaluated formula precision.                   |
+Every default is a constant, so `copy()` changes only the options you pass.
 
-### Operation Precedence
-
-`CalculatorPrecedence.Chain` evaluates like a basic calculator:
-
-```text
-2 + 3 * 4 = 20
-```
-
-`CalculatorPrecedence.Standard` uses standard arithmetic precedence:
-
-```text
-2 + 3 * 4 = 14
-```
+`CalculatorPrecedence.Chain` evaluates left to right like a basic calculator (`2 + 3 * 4 = 20`);
+`CalculatorPrecedence.Standard` uses standard arithmetic precedence (`2 + 3 * 4 = 14`).
 
 ## Formatting
 
@@ -187,81 +245,155 @@ The engine stores formulas in canonical form. Use `CalculatorFormatter` when pre
 results in a UI.
 
 ```kotlin
-import dev.voir.calculator.engine.CalculatorOperationSymbol
 import dev.voir.calculator.engine.format.CalculatorFormatConfig
 import dev.voir.calculator.engine.format.CalculatorFormatter
+import dev.voir.calculator.engine.format.CalculatorOperationSymbols
 
 val formatConfig = CalculatorFormatConfig(
     decimalSeparator = ',',
-    groupingSeparator = ' ',
-    maxDecimals = 2,
-    minimumFractionDigits = 0,
-    operationSymbols = CalculatorOperationSymbol(
+    groupingSeparator = ' ',      // null disables grouping
+    negativeSign = '−',
+    maximumFractionDigits = 2,    // results only
+    minimumFractionDigits = 0,    // results only
+    operationSymbols = CalculatorOperationSymbols(
         add = '+',
-        subtract = '-',
+        subtract = '−',
         multiply = '×',
         divide = '÷',
     ),
+    emptyLabel = null,            // null shows zero while the formula is empty
     errorLabel = "Error",
 )
 
-val displayFormula = CalculatorFormatter.formatFormula("1200.5*2", formatConfig)
-val displayResult = CalculatorFormatter.formatResult(calculator.result.value, formatConfig)
+calculator.setFormula("1200.5*2")
+val display = CalculatorFormatter.format(calculator.state.value, formatConfig)
+display.formula // "1 200,5 × 2"
+display.result  // "2 401"
 ```
 
-You can also normalize formatted user input back to canonical formula text:
+Formula numbers are always shown exactly as typed, so `1200.50` stays `1 200,50` while the user is
+typing. Only results are rounded and padded with `maximumFractionDigits` and
+`minimumFractionDigits`.
+
+Give each error its own text with `errorLabel`:
+
+```kotlin
+CalculatorFormatter.formatResult(calculator.result.value, formatConfig) { error ->
+    when (error) {
+        CalculatorError.DivisionByZero -> "Cannot divide by zero"
+        else -> "Error"
+    }
+}
+```
+
+Normalize formatted user input, such as pasted text, back to canonical formula text:
 
 ```kotlin
 val raw = CalculatorFormatter.normalizeFormula("1 200,5 × 2", formatConfig)
 calculator.trySetFormula(raw)
 ```
 
-For reactive UI state, build formatted `StateFlow` values:
-
-```kotlin
-val formattedFormula = CalculatorFormatter.formatFormula(
-    formula = calculator.formula,
-    scope = viewModelScope,
-    config = formatConfig,
-)
-```
+For reactive UI state, format the state flow as in the [Compose example](#jetpack-compose). Pass a
+`Flow<CalculatorFormatConfig>` instead of a value when display settings can change, for example with
+the locale.
 
 ## Error Handling
 
-Evaluation returns `CalculatorResult`:
+Evaluation returns `CalculatorResult`, which is also published through `state` and `result`:
 
 ```kotlin
 when (val result = calculator.evaluate()) {
+    CalculatorResult.Empty -> {
+        // The formula has no complete number yet, for example "" or "-".
+    }
     is CalculatorResult.Success -> {
-        // result.value is a Decimal
+        // result.value is the exact Decimal; format it for display.
     }
     is CalculatorResult.Error -> {
-        // result.error is DivisionByZero, InvalidNumber, or ArithmeticFailure
+        // result.error is DivisionByZero, InvalidNumber, or ArithmeticFailure.
     }
 }
 ```
 
-Calculation errors are also emitted through `calculator.result`.
+`InvalidNumber` means a number `Decimal` cannot represent, such as more than 38 significant digits in
+text passed to `setFormula`. `ArithmeticFailure` means a result outside `Decimal`'s range.
+
+## Logging
+
+The engine has no logging dependency. Pass a `CalculatorLogger` to forward its diagnostics to the
+logger your app already uses; the default, `CalculatorLogger.None`, discards everything without
+building messages.
+
+| Level     | What is logged                                                                      |
+|-----------|-------------------------------------------------------------------------------------|
+| `Debug`   | Every key press with its outcome, formula changes, and evaluations                  |
+| `Info`    | Configuration changes and unusual evaluation failures (overflow, unreadable number) |
+| `Warning` | Unparsable text passed to `setFormula`, which usually means an integration bug      |
+| `Error`   | Not used by the engine today                                                        |
+
+Formula text can be sensitive, for example amounts in a finance app, so it only appears in `Debug`
+messages. Messages are lambdas: call `message()` only for levels you keep.
+
+With [Kermit](https://github.com/touchlab/Kermit) in common code:
+
+```kotlin
+val log = Logger.withTag("Calculator")
+
+val calculator = Calculator(
+    logger = { level, message ->
+        when (level) {
+            CalculatorLogLevel.Debug -> log.d { message() }
+            CalculatorLogLevel.Info -> log.i { message() }
+            CalculatorLogLevel.Warning -> log.w { message() }
+            CalculatorLogLevel.Error -> log.e { message() }
+        }
+    },
+)
+```
+
+With Android's `Log`, keeping only warnings and errors in release builds:
+
+```kotlin
+val logger = CalculatorLogger { level, message ->
+    if (level >= CalculatorLogLevel.Warning || BuildConfig.DEBUG) {
+        Log.println(if (level >= CalculatorLogLevel.Warning) Log.WARN else Log.DEBUG, "Calculator", message())
+    }
+}
+```
 
 ## Development
 
-Clone the repository and run the tests:
+Clone the repository and run the checks:
 
 ```bash
 git clone https://github.com/VoirDev/calculator-engine-kmp.git
 cd calculator-engine-kmp
-./gradlew test
+./gradlew check
 ```
 
 Useful Gradle tasks:
 
 ```bash
-./gradlew :calculator-engine:test
-./gradlew :calculator-engine:compileKotlinJvm
+./gradlew :calculator-engine:allTests         # tests on every target the host can run
+./gradlew :calculator-engine:jvmTest          # fastest feedback loop
+./gradlew :calculator-engine:checkKotlinAbi   # fails when the public API changed
+./gradlew :calculator-engine:updateKotlinAbi  # accept an intended public API change
+./gradlew :calculator-engine:dokkaGenerate    # API reference in calculator-engine/build/dokka/html
 ./gradlew :calculator-engine:publishToMavenLocal
 ```
 
-The project uses Kotlin Multiplatform with a JVM toolchain of 21.
+The project uses Kotlin Multiplatform in explicit API mode with a JVM toolchain of 21. Gradle
+downloads the JDK automatically when it is not installed. The public API is recorded in
+`calculator-engine/api`; `check` fails when it changes, so run `updateKotlinAbi` and commit the dump
+together with an intended API change. iOS and macOS tests need a macOS host.
+
+## Continuous Integration
+
+The `Verify` workflow (`.github/workflows/verify.yml`) runs `./gradlew check` on macOS for every pull
+request to `main`, so iOS and macOS tests run as well. Make `Verify / Build and check whole
+repository` a required check in the `main` ruleset.
+
+Adding `[skip verify]` to a pull request body skips the check; remove it to run the check again.
 
 ## License
 

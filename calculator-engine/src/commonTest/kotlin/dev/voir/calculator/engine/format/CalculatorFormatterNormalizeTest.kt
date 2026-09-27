@@ -1,6 +1,5 @@
 package dev.voir.calculator.engine.format
 
-import dev.voir.calculator.engine.CalculatorOperationSymbol
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -22,7 +21,7 @@ class CalculatorFormatterNormalizeTest {
     fun `normalize formula converts custom operation symbols to canonical operators`() {
         val config = CalculatorFormatConfig(
             groupingSeparator = '_',
-            operationSymbols = CalculatorOperationSymbol(
+            operationSymbols = CalculatorOperationSymbols(
                 add = 'p',
                 subtract = 'm',
                 multiply = 'x',
@@ -54,5 +53,29 @@ class CalculatorFormatterNormalizeTest {
         val normalized = CalculatorFormatter.normalizeFormula(formatted, config)
 
         assertEquals(canonical, normalized)
+    }
+
+    @Test
+    fun `normalize formula maps a distinct negative sign to canonical minus`() {
+        val config = CalculatorFormatConfig(negativeSign = '−')
+
+        assertEquals("-5--3", CalculatorFormatter.normalizeFormula("−5 - −3", config))
+    }
+
+    @Test
+    fun `normalize formula keeps spaces out when grouping is disabled`() {
+        val config = CalculatorFormatConfig(groupingSeparator = null)
+
+        assertEquals("1234+5", CalculatorFormatter.normalizeFormula("1234 + 5", config))
+    }
+
+    @Test
+    fun `format and normalize round trip with unicode minus for sign and subtraction`() {
+        val config = CalculatorFormatConfig(negativeSign = '−', operationSymbols = CalculatorOperationSymbols(subtract = '−'))
+        val canonical = "-1234.5--2*-3"
+
+        val formatted = CalculatorFormatter.formatFormula(canonical, config)
+
+        assertEquals(canonical, CalculatorFormatter.normalizeFormula(formatted, config))
     }
 }

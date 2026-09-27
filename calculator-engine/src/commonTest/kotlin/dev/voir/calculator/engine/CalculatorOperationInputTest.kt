@@ -9,13 +9,13 @@ class CalculatorOperationInputTest {
     fun `empty formula accepts only subtract as negative sign`() {
         val calculator = Calculator()
 
-        assertFalse(calculator.inputOperation(CalculatorOperation.Add))
-        assertFalse(calculator.inputOperation(CalculatorOperation.Multiply))
-        assertFalse(calculator.inputOperation(CalculatorOperation.Divide))
-        assertTrue(calculator.inputOperation(CalculatorOperation.Subtract))
+        assertRejected(calculator.inputOperation(CalculatorOperation.Add))
+        assertRejected(calculator.inputOperation(CalculatorOperation.Multiply))
+        assertRejected(calculator.inputOperation(CalculatorOperation.Divide))
+        assertAccepted(calculator.inputOperation(CalculatorOperation.Subtract))
 
         calculator.assertFormula("-")
-        calculator.assertSuccess("0")
+        calculator.assertEmpty()
     }
 
     @Test
@@ -32,7 +32,7 @@ class CalculatorOperationInputTest {
     fun `operation input replaces previous operation`() {
         val calculator = Calculator()
 
-        calculator.input("1+*/-")
+        calculator.input("1*/+-")
 
         calculator.assertFormula("1-")
         calculator.assertSuccess("1")
@@ -44,11 +44,45 @@ class CalculatorOperationInputTest {
 
         calculator.input("-")
 
-        assertFalse(calculator.inputOperation(CalculatorOperation.Add))
-        assertFalse(calculator.inputOperation(CalculatorOperation.Multiply))
-        assertFalse(calculator.inputOperation(CalculatorOperation.Divide))
-        assertFalse(calculator.inputOperation(CalculatorOperation.Subtract))
+        assertRejected(calculator.inputOperation(CalculatorOperation.Add))
+        assertRejected(calculator.inputOperation(CalculatorOperation.Multiply))
+        assertRejected(calculator.inputOperation(CalculatorOperation.Divide))
+        assertRejected(calculator.inputOperation(CalculatorOperation.Subtract))
         calculator.assertFormula("-")
+    }
+
+    @Test
+    fun `subtract after multiply or divide starts a negative operand`() {
+        val multiply = Calculator()
+        multiply.input("5*-3")
+        multiply.assertFormula("5*-3")
+        multiply.assertSuccess("-15")
+
+        val divide = Calculator()
+        divide.input("6/-3")
+        divide.assertFormula("6/-3")
+        divide.assertSuccess("-2")
+    }
+
+    @Test
+    fun `subtract after add or subtract replaces the operation`() {
+        val calculator = Calculator()
+
+        calculator.input("5+-")
+
+        calculator.assertFormula("5-")
+    }
+
+    @Test
+    fun `operation after a negative sign in operand position replaces the preceding operation`() {
+        val calculator = Calculator()
+        calculator.input("5*-")
+
+        assertRejected(calculator.inputOperation(CalculatorOperation.Subtract))
+        calculator.assertFormula("5*-")
+
+        assertAccepted(calculator.inputOperation(CalculatorOperation.Add))
+        calculator.assertFormula("5+")
     }
 
     @Test
@@ -67,8 +101,8 @@ class CalculatorOperationInputTest {
 
         calculator.setFormula("1+2")
         calculator.evaluate()
-        assertTrue(calculator.inputOperation(CalculatorOperation.Multiply))
-        assertTrue(calculator.inputDigit('3'))
+        assertAccepted(calculator.inputOperation(CalculatorOperation.Multiply))
+        assertAccepted(calculator.inputDigit('3'))
 
         calculator.assertFormula("3*3")
         calculator.assertSuccess("9")

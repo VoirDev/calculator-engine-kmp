@@ -1,6 +1,7 @@
 package dev.voir.calculator.engine
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 
@@ -18,8 +19,11 @@ class CalculatorSetFormulaTest {
             "1--2" to "1--2",
             "1*-2" to "1*-2",
             "1/-2" to "1/-2",
-            ".5" to ".5",
-            "-.5" to "-.5",
+            ".5" to "0.5",
+            "-.5" to "-0.5",
+            "007" to "7",
+            "-007+00.50" to "-7+0.50",
+            "0" to "0",
             "1." to "1.",
             "1.+2" to "1+2",
             "1+" to "1+",
@@ -53,6 +57,26 @@ class CalculatorSetFormulaTest {
                 Calculator().setFormula(formula)
             }
         }
+    }
+
+    @Test
+    fun `set formula rejects non ascii digits`() {
+        // Char.isDigit() accepts these, but Decimal cannot read them.
+        for (formula in listOf("٣", "３+1", "1+६")) {
+            assertFailsWith<IllegalArgumentException>(formula) {
+                Calculator().setFormula(formula)
+            }
+        }
+    }
+
+    @Test
+    fun `set formula reports error positions in the original text`() {
+        val exception = assertFailsWith<FormulaSyntaxException> {
+            Calculator().setFormula("1 + 2 + a")
+        }
+
+        assertEquals(FormulaError(FormulaErrorKind.InvalidCharacter, 8, "a"), exception.error)
+        assertEquals("Invalid character 'a' at position 8", exception.message)
     }
 
     @Test

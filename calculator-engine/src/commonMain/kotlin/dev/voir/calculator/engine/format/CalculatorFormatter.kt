@@ -1,179 +1,167 @@
 package dev.voir.calculator.engine.format
 
-import dev.voir.calculator.engine.CalculatorOperation
+import dev.voir.calculator.engine.CalculatorError
 import dev.voir.calculator.engine.CalculatorResult
+import dev.voir.calculator.engine.CalculatorState
+import dev.voir.calculator.engine.FormulaSyntaxException
+import dev.voir.calculator.engine.formula.FormulaParser
+import dev.voir.calculator.engine.formula.FormulaToken
 import dev.voir.decimal.Decimal
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 
 /**
- * Formatter entry points for canonical calculator state.
+ * Converts canonical calculator state to display text and back.
+ *
+ * Every function is pure and safe to call from any thread.
  */
-object CalculatorFormatter {
+public object CalculatorFormatter {
     /**
-     * Format a canonical formula using configured separators and operation symbols.
+     * Format a canonical formula using configured separators, sign, and operation symbols.
+     *
+     * Numbers are shown exactly as typed, including trailing zeros and a trailing decimal
+     * separator, so the display never changes a digit the user entered. Operations are surrounded
+     * by single spaces.
+     *
+     * @param formula Canonical formula text, usually [dev.voir.calculator.engine.CalculatorApi.formula].
+     * @param config Display settings.
+     * @return Formatted formula text.
+     * @throws FormulaSyntaxException When [formula] contains an unsupported character.
      */
-    fun formatFormula(
+    public fun formatFormula(
         formula: String,
-        config: CalculatorFormatConfig = CalculatorFormatConfig()
-    ): String {
-        return renderFormula(parseFormulaForDisplay(formula), config)
+        config: CalculatorFormatConfig = CalculatorFormatConfig(),
+    ): String = buildString {
+        for (token in FormulaParser.tokenize(formula)) when (token) {
+            is FormulaToken.Num -> append(formatTypedNumber(token.text, config))
+            is FormulaToken.Op -> append(' ').append(config.operationSymbols.symbolFor(token.operation)).append(' ')
+        }
     }
 
     /**
-     * Build a formatted formula StateFlow from canonical formula state.
+     * Format a calculator result.
+     *
+     * Values are rounded to [CalculatorFormatConfig.maximumFractionDigits] and padded to
+     * [CalculatorFormatConfig.minimumFractionDigits].
+     *
+     * @param result Result to format.
+     * @param config Display settings.
+     * @param errorLabel Text for each calculation error; defaults to
+     * [CalculatorFormatConfig.errorLabel] for all of them.
+     * @return Formatted value, [CalculatorFormatConfig.emptyLabel] (or zero) for an empty result, or
+     * the error label.
      */
-    fun formatFormula(
-        formula: StateFlow<String>,
-        scope: CoroutineScope,
+    public fun formatResult(
+        result: CalculatorResult,
         config: CalculatorFormatConfig = CalculatorFormatConfig(),
-        started: SharingStarted = SharingStarted.WhileSubscribed(5_000)
-    ): StateFlow<String> {
-        return formula.map { f -> formatFormula(f, config) }
-            .stateIn(scope, started, formatFormula(formula.value, config))
+        errorLabel: (CalculatorError) -> String = { config.errorLabel },
+    ): String = when (result) {
+        is CalculatorResult.Empty -> config.emptyLabel ?: formatValue(Decimal.zero(), config)
+        is CalculatorResult.Success -> formatValue(result.value, config)
+        is CalculatorResult.Error -> errorLabel(result.error)
     }
+
+    /**
+     * Format a whole calculator snapshot.
+     *
+     * @param state Snapshot to format, usually from [dev.voir.calculator.engine.CalculatorApi.state].
+     * @param config Display settings.
+     * @param errorLabel Text for each calculation error; defaults to
+     * [CalculatorFormatConfig.errorLabel] for all of them.
+     * @return Formatted formula and result from the same snapshot.
+     */
+    public fun format(
+        state: CalculatorState,
+        config: CalculatorFormatConfig = CalculatorFormatConfig(),
+        errorLabel: (CalculatorError) -> String = { config.errorLabel },
+    ): CalculatorDisplay = CalculatorDisplay(
+        formula = formatFormula(state.formula, config),
+        result = formatResult(state.result, config, errorLabel),
+        isShowingResult = state.isShowingResult,
+    )
 
     /**
      * Convert user-facing formula text back to the calculator's canonical formula alphabet.
+     *
+     * Whitespace and grouping separators are dropped; the configured separator, sign, and
+     * operation symbols are mapped to canonical characters. Unknown characters are kept so the
+     * parser can reject them with a precise position.
+     *
+     * @param text Formatted formula text, for example pasted by the user.
+     * @param config Display settings used to produce [text].
+     * @return Canonical formula text suitable for [dev.voir.calculator.engine.CalculatorApi.trySetFormula].
      */
-    fun normalizeFormula(
-        string: String,
-        config: CalculatorFormatConfig = CalculatorFormatConfig()
-    ): String {
-        val ops = config.operationSymbols
-        val sb = StringBuilder()
-        for (c in string) when {
-            c.isWhitespace() -> {}
-            c == config.groupingSeparator -> {}
-            c == config.decimalSeparator -> sb.append('.')
-            c == ops.add -> sb.append('+')
-            c == ops.subtract -> sb.append('-')
-            c == ops.multiply -> sb.append('*')
-            c == ops.divide -> sb.append('/')
-            else -> sb.append(c)
-        }
-        return sb.toString()
-    }
-
-    /**
-     * Format a calculator result. Errors become [CalculatorFormatConfig.errorLabel].
-     */
-    fun formatResult(
-        result: CalculatorResult,
-        config: CalculatorFormatConfig = CalculatorFormatConfig()
-    ): String {
-        return when (result) {
-            is CalculatorResult.Success -> result.value.toConfiguredFormattedString(config)
-            is CalculatorResult.Error -> config.errorLabel
-        }
-    }
-
-    /**
-     * Build a formatted result StateFlow from calculator result state.
-     */
-    fun formatResult(
-        result: StateFlow<CalculatorResult>,
-        scope: CoroutineScope,
+    public fun normalizeFormula(
+        text: String,
         config: CalculatorFormatConfig = CalculatorFormatConfig(),
-        started: SharingStarted = SharingStarted.WhileSubscribed(5_000)
-    ): StateFlow<String> {
-        return result.map { current -> formatResult(current, config) }
-            .stateIn(scope, started, formatResult(result.value, config))
-    }
-}
-
-private sealed interface FormatToken {
-    data class Num(val text: String) : FormatToken
-    data class Op(val op: CalculatorOperation) : FormatToken
-}
-
-private fun renderFormula(tokens: List<FormatToken>, config: CalculatorFormatConfig): String =
-    buildString {
-        for (token in tokens) when (token) {
-            is FormatToken.Num -> append(formatNumberText(token.text, config))
-            is FormatToken.Op -> append(' ').append(config.operationSymbols.forOp(token.op))
-                .append(' ')
-        }
-    }
-
-private fun formatNumberText(text: String, config: CalculatorFormatConfig): String {
-    if (text == "-") return "-"
-    if (canUseDecimalFormatterForNumberText(text)) {
-        try {
-            return Decimal.of(text).toConfiguredFormattedString(config)
-        } catch (_: IllegalArgumentException) {
-            // Fall back to edit-preserving formatting for raw text Decimal will not parse.
-        }
-    }
-
-    val negative = text.startsWith('-')
-    val abs = if (negative) text.substring(1) else text
-    val dotIdx = abs.indexOf('.')
-    val intPart = if (dotIdx >= 0) abs.substring(0, dotIdx) else abs
-    val fracPart = if (dotIdx >= 0) abs.substring(dotIdx + 1) else null
-
-    return buildString {
-        if (negative) append('-')
-        append(intPart.ifEmpty { "0" })
-        if (fracPart != null) {
-            append(config.decimalSeparator).append(fracPart)
-        }
-    }
-}
-
-private fun canUseDecimalFormatterForNumberText(text: String): Boolean {
-    if (text.endsWith('.')) return false
-    val fraction = text.substringAfter('.', missingDelimiterValue = "")
-    return fraction.isEmpty() || !fraction.endsWith('0')
-}
-
-private fun Decimal.toConfiguredFormattedString(config: CalculatorFormatConfig): String {
-    return toFormattedString(
-        decimalSeparator = config.decimalSeparator,
-        groupingSeparator = config.groupingSeparator,
-        minimumFractionDigits = config.minimumFractionDigits,
-        maximumFractionDigits = config.maxDecimals,
-        rounding = config.rounding,
-    )
-}
-
-private fun parseFormulaForDisplay(formula: String): List<FormatToken> {
-    val cleaned = formula.filter { !it.isWhitespace() }
-    val result = mutableListOf<FormatToken>()
-    var i = 0
-    while (i < cleaned.length) {
-        val c = cleaned[i]
-        when {
-            c.isDigit() || c == '.' ||
-                    (c == '-' && (result.isEmpty() || result.last() is FormatToken.Op)) -> {
-                val start = i
-                if (c == '-') i++
-                var hasDot = false
-                while (i < cleaned.length) {
-                    val ch = cleaned[i]
-                    when {
-                        ch.isDigit() -> i++
-                        ch == '.' && !hasDot -> {
-                            hasDot = true
-                            i++
-                        }
-
-                        else -> break
-                    }
-                }
-                result.add(FormatToken.Num(cleaned.substring(start, i)))
+    ): String {
+        val symbols = config.operationSymbols
+        return buildString {
+            for (char in text) when (char) {
+                config.groupingSeparator -> {}
+                config.decimalSeparator -> append('.')
+                // Checked before operations: when the sign equals the subtract symbol both map to '-'.
+                config.negativeSign -> append('-')
+                symbols.add -> append('+')
+                symbols.subtract -> append('-')
+                symbols.multiply -> append('*')
+                symbols.divide -> append('/')
+                else -> if (!char.isWhitespace()) append(char)
             }
-
-            c == '+' || c == '-' || c == '*' || c == '/' -> {
-                result.add(FormatToken.Op(CalculatorOperation.fromSymbol(c)))
-                i++
-            }
-
-            else -> throw IllegalArgumentException("Invalid character '$c' at position $i")
         }
     }
-    return result
+
+    /**
+     * Format typed number text without rounding or padding it.
+     *
+     * @param text Raw number text such as `1234.50`, `-`, or `0.`.
+     * @param config Display settings.
+     * @return Text with the configured sign, grouping, and decimal separator.
+     */
+    private fun formatTypedNumber(text: String, config: CalculatorFormatConfig): String {
+        val isNegative = text.startsWith('-')
+        val unsigned = text.removePrefix("-")
+        val integerPart = unsigned.substringBefore('.')
+        return buildString {
+            if (isNegative) append(config.negativeSign)
+            // A bare sign is still being typed; show it without an integer part.
+            if (unsigned.isEmpty()) return@buildString
+            append(group(integerPart.ifEmpty { "0" }, config.groupingSeparator))
+            if ('.' in unsigned) append(config.decimalSeparator).append(unsigned.substringAfter('.'))
+        }
+    }
+
+    /**
+     * Format a result value with rounding, padding, separators, and sign.
+     *
+     * @param value Value to format.
+     * @param config Display settings.
+     * @return Formatted value.
+     */
+    private fun formatValue(value: Decimal, config: CalculatorFormatConfig): String {
+        val formatted = value.toFormattedString(
+            maximumFractionDigits = config.maximumFractionDigits,
+            minimumFractionDigits = config.minimumFractionDigits,
+            rounding = config.rounding,
+            decimalSeparator = config.decimalSeparator,
+            groupingSeparator = config.groupingSeparator,
+        )
+        return if (formatted.startsWith('-')) config.negativeSign + formatted.substring(1) else formatted
+    }
+
+    /**
+     * Insert [separator] every three digits from the right.
+     *
+     * @param digits Integer digits without a sign.
+     * @param separator Grouping separator, or `null` to leave [digits] unchanged.
+     * @return Grouped digits.
+     */
+    private fun group(digits: String, separator: Char?): String {
+        if (separator == null || digits.length <= 3) return digits
+        val firstGroup = digits.length % 3
+        return buildString {
+            digits.forEachIndexed { index, digit ->
+                if (index > 0 && (index - firstGroup) % 3 == 0) append(separator)
+                append(digit)
+            }
+        }
+    }
 }

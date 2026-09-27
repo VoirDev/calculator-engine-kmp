@@ -15,6 +15,11 @@ pluginManagement {
     }
 }
 
+plugins {
+    // Lets Gradle download the JDK requested by jvmToolchain() when it is not installed locally.
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 dependencyResolutionManagement {
     repositories {
         google {
@@ -24,7 +29,6 @@ dependencyResolutionManagement {
                 includeGroupAndSubgroups("com.google")
             }
         }
-        mavenLocal()
         mavenCentral()
     }
 }
