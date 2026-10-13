@@ -6,3 +6,11 @@ plugins {
     alias(libs.plugins.mavenPublish) apply false
     alias(libs.plugins.dokka) apply false
 }
+
+// Release version. The Release workflow bumps this line; override locally with -PreleaseVersion=x.y.z.
+val projectVersion = providers.gradleProperty("releaseVersion").orElse("1.0.0").get()
+
+allprojects {
+    group = "dev.voir"
+    version = projectVersion
+}

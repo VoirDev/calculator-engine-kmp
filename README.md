@@ -23,7 +23,7 @@ symbols.
 
 ## Installation
 
-The library is not published to Maven Central yet. The coordinates will be:
+The library is published to Maven Central:
 
 ```kotlin
 kotlin {
@@ -34,15 +34,6 @@ kotlin {
     }
 }
 ```
-
-Until then, publish it to your local Maven repository and add `mavenLocal()` to your app's
-repositories:
-
-```bash
-./gradlew :calculator-engine:publishToMavenLocal
-```
-
-The version comes from `version` in `gradle.properties`; override it with `-Pversion=x.y.z`.
 
 See [CHANGELOG.md](CHANGELOG.md) for changes and a migration guide from the initial implementation.
 
@@ -394,6 +385,18 @@ request to `main`, so iOS and macOS tests run as well. Make `Verify / Build and 
 repository` a required check in the `main` ruleset.
 
 Adding `[skip verify]` to a pull request body skips the check; remove it to run the check again.
+
+## Releasing
+
+The `Release` workflow (`.github/workflows/release.yml`) publishes to Maven Central. The release
+version is `projectVersion` in the root `build.gradle.kts`.
+
+1. Run `Release` with mode `prepare-release-pr`. It opens a `release/vX.Y.Z` pull request that bumps
+   the patch version, or sets the version given in the `version` input.
+2. Merge the pull request. The workflow publishes `dev.voir:calculator-engine`, pushes tag `vX.Y.Z`,
+   and creates a GitHub release from the pull request description.
+
+Mode `publish-current` publishes the version already on `main` without a release pull request.
 
 ## License
 
