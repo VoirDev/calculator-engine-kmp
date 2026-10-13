@@ -8,7 +8,7 @@ plugins {
 }
 
 // Release version. The Release workflow bumps this line; override locally with -PreleaseVersion=x.y.z.
-val projectVersion = providers.gradleProperty("releaseVersion").orElse("1.0.0").get()
+val projectVersion = providers.gradleProperty("releaseVersion").orElse("1.0.1").get()
 
 allprojects {
     group = "dev.voir"
