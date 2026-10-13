@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-13
+
 First public release. It is not compatible with the initial implementation that was available as
 a local `1.0.0` build; see
 [Migrating from the initial implementation](https://github.com/VoirDev/calculator-engine-kmp/blob/main/CHANGELOG.md#migrating-from-the-initial-implementation).
