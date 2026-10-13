@@ -1,5 +1,7 @@
 # Calculator Engine KMP
 
+[![Maven Central](https://img.shields.io/maven-central/v/dev.voir/calculator-engine)](https://central.sonatype.com/artifact/dev.voir/calculator-engine)
+
 A small Kotlin Multiplatform calculator engine for apps that need reliable calculator-style input,
 exact decimal evaluation, and reactive UI state.
 
@@ -23,13 +25,14 @@ symbols.
 
 ## Installation
 
-The library is published to Maven Central:
+The library is published to Maven Central. Replace `<latest>` with the latest version shown on the
+badge above:
 
 ```kotlin
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("dev.voir:calculator-engine:1.0.0")
+            implementation("dev.voir:calculator-engine:<latest>")
         }
     }
 }
